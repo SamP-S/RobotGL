@@ -3,6 +3,8 @@
 .vscode/
 bin/
 build/
+venv*
+*venv
 
 # Prerequisites
 *.d
