@@ -1,2 +1,5 @@
-mkdir -p build
-g++ src/main.cpp -o build/main
+if [[ "$1" == "clean" ]]; then
+    rm -rf build
+fi
+cmake -S . -B build
+cmake --build build
