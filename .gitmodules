@@ -2,3 +2,12 @@
 	path = external/imgui
 	url = git@github.com:ocornut/imgui.git
 	branch = docking
+[submodule "external/spdlog"]
+	path = external/spdlog
+	url = git@github.com:gabime/spdlog.git
+[submodule "external/json"]
+	path = external/json
+	url = git@github.com:nlohmann/json.git
+[submodule "external/la"]
+	path = external/la
+	url = git@github.com:SamP-S/LA.git
