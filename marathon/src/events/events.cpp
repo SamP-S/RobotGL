@@ -31,7 +31,7 @@ bool Events::Poll(std::shared_ptr<Signal>& event) {
     
 void Events::Push(std::shared_ptr<Signal> event) {
     _queue.push(event);
-}
+}   
 
 void Events::Clear() {
     while (!_queue.empty()) {
