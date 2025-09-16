@@ -1,45 +1,31 @@
-#include <vector>
+// std lib
+#include <algorithm>
+#include <array>
 
+// internal
 #include "marathon.hpp"
+#include "core/i_system.hpp"
 
 namespace marathon {
 
-    /// TODO: ensure the boot/shutdown orders are correct
-    // ensure each module ensures their required modules have already booted successfully
-    // e.g. renderer checks window has booted
+    const std::array<int, 4> validBackends = {
+        GLFW | OPENGL,
+        GLFW | VULKAN,
+        SDL2 | OPENGL,
+        SDL2 | VULKAN
+    };
 
-    /// NOTE: this is the first time instancing the modules but instancing order doesn't matter
+    int Init(Backends flags) {
 
-    int Init() {
-        // maintain specific module order for booting correctly
-        std::vector<Module*> modules = {
-            &time::Time::Instance(),
-            &window::Window::Instance(),
-            &renderer::Renderer::Instance(),
-            &events::Events::Instance()
-        };
-        int moduleBootFail = 0;
-        for (auto module : modules) {
-            if (module != nullptr && !module->Boot())
-                moduleBootFail++;
+        if (std::find(validBackends.begin(), validBackends.end(), flags) == validBackends.end()) {
+            return -1; // Invalid backend
         }
-        return moduleBootFail;
+
+        return 0;
     }
 
     int Quit() {
-        // maintain specific module order for shutting down correctly
-        std::vector<Module*> modules = {
-            &time::Time::Instance(),
-            &window::Window::Instance(),
-            &renderer::Renderer::Instance(),
-            &events::Events::Instance()
-        };
-        int moduleShutdownFails = 0;
-        for (auto module : modules) {
-            if (module != nullptr && !module->Shutdown())
-                moduleShutdownFails++;
-        }
-        return moduleShutdownFails;
+        return 0;
     }
 
 } // marathon

@@ -9,13 +9,13 @@ namespace marathon {
 namespace events {
 
 // events API facade
-bool Init(std::unique_ptr<IEventSystem> impl);
+bool Init();
 bool Quit();
 bool PollEvent(Event& e);
 bool WaitEvent(Event& e);
 
-/// TODO: Allow for pushing events
-/// TODO: Allow for wait until timeout
+/// TODO: Impl for pushing events
+/// TODO: Impl for wait until timeout
 
 } // events
     

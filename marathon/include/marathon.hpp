@@ -1,29 +1,28 @@
 #pragma once
 
+// std lib
 #include <iostream>
 #include <string>
 #include <memory>
 #include <cassert>
 
-// include core modules
-#include "core/module.hpp"
-#include "core/uuid.hpp"
-#include "core/resource.hpp"
-
-#include "window/window.hpp"
-#include "renderer/renderer.hpp"
-#include "events/events.hpp"
-#include "time/time.hpp"
-// add audio
-// add input
-
-
 namespace marathon {
-   
+
+    enum Backends {
+        DEFAULT = 0x00,
+        OPENGL  = 0x01,
+        VULKAN  = 0x01 << 1,
+        SDL2    = 0x01 << 2,
+        GLFW    = 0x01 << 3,
+        NONE    = 0x01 << 4
+    };
+
+    extern const std::array<int, 4> validBackends;
+
     /** @brief Initialise all modules
         @return Returns the number of modules that failed to boot
     */
-    int Init();
+    int Init(Backends flags = Backends::DEFAULT);
 
     /** @brief Quit all modules
         @return number of modules that failed to quit

@@ -4,27 +4,16 @@ namespace marathon {
 
 namespace time {
 
-Time::Time(const std::string& name)
-    : Module(ModuleType::TIME, name),
-      _start(std::chrono::steady_clock::now()),
-      _lastTick(std::chrono::steady_clock::now()),
-      _dt(0.0) {}
 
-Time& Time::Instance() {
-    static Time* instance;
-    if (!instance)
-        instance = new Time("marathon.time");
-    return *instance;
-}
 
 // module interface
-bool Time::Boot() {
+bool Init() {
     _start = std::chrono::steady_clock::now();
     _lastTick = _start;
     _active = true;
     return true;
 }
-bool Time::Shutdown() {
+bool Quit() {
     _active = false;
     return true;
 }

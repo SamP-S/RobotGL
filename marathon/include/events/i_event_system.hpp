@@ -17,13 +17,16 @@ namespace events {
 
 class IEventSystem : public ISystem {
 public:
-    IEventSystem();
-    ~IEventSystem();
+    IEventSystem(const std::string& name);
+    virtual ~IEventSystem();
 
-    bool Init(std::unique_ptr<IEventSystem> impl);  // differing from ISystem
-    bool Quit();
-    bool PollEvent(Event& e);
-    bool WaitEvent(Event& e);
+    // system interface
+    bool Init() override;
+    bool Quit() override;
+
+    // event interface
+    virtual bool PollEvent(Event& e) = 0;
+    virtual bool WaitEvent(Event& e) = 0;
 };
 
 } // events
