@@ -55,8 +55,8 @@ target_link_libraries(marathon PRIVATE ${GLEW_LIBRARIES})
 message(STATUS "GLEW included at ${GLEW_INCLUDE_DIRS}")
 message(STATUS "GLEW libraries are ${GLEW_LIBRARIES}")
 
-target_link_libraries(marathon PRIVATE la)
-target_link_libraries(marathon PRIVATE spdlog)
+target_link_libraries(marathon PUBLIC la)
+target_link_libraries(marathon PUBLIC spdlog)
 target_link_libraries(marathon PRIVATE nlohmann_json::nlohmann_json)
 
 # robot sim
