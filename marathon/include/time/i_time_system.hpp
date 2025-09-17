@@ -10,7 +10,7 @@ namespace marathon {
 
 namespace time {
 
-class ITimeSystem : public ISystem {
+class ITimeSystem : public core::ISystem {
 public:
     ITimeSystem(const std::string& name);
     virtual ~ITimeSystem();

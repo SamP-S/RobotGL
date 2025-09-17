@@ -16,7 +16,7 @@ namespace marathon {
 
 namespace events {
 
-class IEventSystem : public ISystem {
+class IEventSystem : public core::ISystem {
 public:
     IEventSystem(const std::string& name);
     virtual ~IEventSystem() = default;

@@ -1,5 +1,6 @@
-// internal
 #include "time/time.hpp"
+
+// internal
 #include "core/logger.hpp"
 #include "time/time_system.hpp"
 

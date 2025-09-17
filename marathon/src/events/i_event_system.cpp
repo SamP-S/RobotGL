@@ -1,4 +1,3 @@
-// internal
 #include "events/i_event_system.hpp"
 
 namespace marathon {
@@ -6,7 +5,7 @@ namespace marathon {
 namespace events {
 
 IEventSystem::IEventSystem(const std::string& name)
-    : ISystem(SystemType::EVENTS, name) {}
+    : ISystem(core::SystemType::EVENTS, name) {}
 
 } // namespace events
 

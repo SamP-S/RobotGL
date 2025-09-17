@@ -1,6 +1,7 @@
+#include "events/events.hpp"
+
 // internal
 #include "core/logger.hpp"
-#include "events/events.hpp"
 #include "events/i_event_system.hpp"
 #include "events/sdl2/sdl2_event_system.hpp"
 

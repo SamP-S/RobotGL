@@ -1,4 +1,3 @@
-// internal
 #include "events/event.hpp"
 
 namespace marathon {

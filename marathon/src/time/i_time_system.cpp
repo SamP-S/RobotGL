@@ -1,4 +1,3 @@
-// internal
 #include "time/i_time_system.hpp"
 
 namespace marathon {
@@ -6,7 +5,7 @@ namespace marathon {
 namespace time {
 
 ITimeSystem::ITimeSystem(const std::string& name)
-    : ISystem(SystemType::TIME, name) {}
+    : ISystem(core::SystemType::TIME, name) {}
 
 } // namespace events
 
