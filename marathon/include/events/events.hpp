@@ -2,7 +2,6 @@
 
 // internal
 #include "events/event.hpp"
-#include "events/i_event_system.hpp"
 
 namespace marathon {
 
