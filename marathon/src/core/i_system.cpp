@@ -2,6 +2,8 @@
 
 namespace marathon {
 
+namespace core {
+
 // Constructor
 ISystem::ISystem(SystemType type, const std::string& name)
     : _name(name), _type(type), _active(false) {}
@@ -21,4 +23,6 @@ SystemType ISystem::GetType() const {
     return _type;
 }
 
-} // namespace marathon
+} // core
+
+} // marathon

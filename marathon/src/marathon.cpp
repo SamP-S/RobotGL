@@ -16,11 +16,8 @@ namespace marathon {
     };
 
     int Init(Backends flags) {
-
-        if (std::find(validBackends.begin(), validBackends.end(), flags) == validBackends.end()) {
-            return -1; // Invalid backend
-        }
-
+        /// TODO: implement relevant backend switching/selecting
+        
         return 0;
     }
 

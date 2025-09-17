@@ -9,8 +9,9 @@
 #include "core/object.hpp"
 #include "core/logger.hpp"
 
-
 namespace marathon {
+
+namespace core {
 
 /// CONSIDER: should whether a node was created at runtime be stored in the node?
 
@@ -34,5 +35,7 @@ public:
     std::shared_ptr<Node> FindChild(const std::string& name);
     std::vector<std::shared_ptr<Node>>& GetChildren();
 };
+
+} // core
 
 } // marathon

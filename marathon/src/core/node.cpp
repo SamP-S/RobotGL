@@ -1,6 +1,11 @@
 #include "core/node.hpp"
 
+// internal
+#include "core/logger.hpp"
+
 namespace marathon {
+
+namespace core {
 
 Node::Node(const std::string& type)
     : Object(type) {}
@@ -84,4 +89,6 @@ std::vector<std::shared_ptr<Node>>& Node::GetChildren() {
     return _mChildren;
 }
 
-}
+} // core
+
+} // marathon

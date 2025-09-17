@@ -5,6 +5,8 @@
 #include <unordered_map>
 
 namespace marathon {
+    
+namespace core {
 
 // as enum for implicit int conversion
 enum SystemType {
@@ -44,4 +46,6 @@ private:
 
 };
 
-} // marathon
+} // namespace core
+
+} // namespace marathon

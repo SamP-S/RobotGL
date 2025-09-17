@@ -6,6 +6,8 @@
 
 namespace marathon {
 
+namespace core {
+
 struct Resource : public Object {
 private:
     std::string _mPath = "./";
@@ -15,5 +17,7 @@ public:
     ~Resource() = default;
 
 };
+
+} // core
 
 } // marathon
