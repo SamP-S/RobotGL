@@ -10,7 +10,7 @@ namespace events {
 
 // events API facade
 bool Init();
-bool Quit();
+void Quit();
 bool PollEvent(Event& e);
 bool WaitEvent(Event& e);
 

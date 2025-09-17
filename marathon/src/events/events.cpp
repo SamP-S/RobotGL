@@ -13,12 +13,14 @@ namespace {
 
 // events API facade
 bool Init() {
-    return false;
+    /// TODO: replace with backend enum flags select
+    instance = new sdl2::SDL2EventSystem();
+    return instance->Init();
 }
 
-bool Quit() {
+void Quit() {
+    instance->Quit();
     instance = nullptr;
-    return true;
 }
 
 bool PollEvent(Event& e) {

@@ -23,7 +23,7 @@ public:
 
     // system interface
     virtual bool Init() = 0;
-    virtual bool Quit() = 0;
+    virtual void Quit() = 0;
 
     // event interface
     virtual bool PollEvent(Event& e) = 0;

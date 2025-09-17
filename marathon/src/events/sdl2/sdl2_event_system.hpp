@@ -19,7 +19,7 @@ public:
     ~SDL2EventSystem() override;
 
     bool Init() override;
-    bool Quit() override;
+    void Quit() override;
 
     bool PollEvent(Event& e) override;
     bool WaitEvent(Event& e) override;

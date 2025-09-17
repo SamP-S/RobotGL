@@ -26,7 +26,7 @@ public:
 
     // standard methods for safe booting and shutting down
     virtual bool Init() = 0;
-    virtual bool Quit() = 0;
+    virtual void Quit() = 0;
     
     // getters
     bool IsActive() const;

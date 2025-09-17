@@ -29,11 +29,10 @@ bool SDL2EventSystem::Init() {
     _active = true;
     return true;
 }
-bool SDL2EventSystem::Quit() {
+void SDL2EventSystem::Quit() {
     SDL_QuitSubSystem(SDL_INIT_EVENTS);
     // TODO: actually validate
     _active = false;
-    return true;
 }
 
 /** @brief get next event in queue
