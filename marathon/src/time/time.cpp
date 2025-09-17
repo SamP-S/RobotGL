@@ -1,39 +1,58 @@
+// internal
 #include "time/time.hpp"
+#include "core/logger.hpp"
+#include "time/time_system.hpp"
 
 namespace marathon {
 
 namespace time {
 
+namespace {
+    static ITimeSystem* instance = nullptr;
+}
 
-
-// module interface
+// system interface
 bool Init() {
-    _start = std::chrono::steady_clock::now();
-    _lastTick = _start;
-    _active = true;
+    if (instance) {
+        MT_CORE_WARN("time/time.cpp: Cannot init an already initialised system.");
+        return false;
+    }
+
+    instance = new TimeSystem();
+    if (!instance->Init()) {
+        MT_CORE_ERROR("time/time.cpp: Failed to init time system.");
+        delete instance;
+        instance = nullptr;
+        return false;
+    }
+
     return true;
 }
-bool Quit() {
-    _active = false;
-    return true;
+void Quit() {
+    if (!instance) {
+        MT_CORE_WARN("time/time.cpp: Cannot quit an uninitialised system.");
+        return;
+    }
+
+    instance->Quit();
+    delete instance;
+    instance = nullptr;
 }
 
-// common
-double Time::Tick() {
-    auto now = std::chrono::steady_clock::now();
-    _dt = std::chrono::duration<double>(now - _lastTick).count();
-    _lastTick = now;
-    return _dt;
+// time interface
+double Tick() {
+    if (!instance) {
+        MT_CORE_WARN("time/time.cpp: Time system not initialised.");
+        return 0.0;
+    }
+    return instance->Tick();
 }
-double Time::GetDeltaTime() {
-    return _dt;
-}
-double Time::GetTime() {
-    auto now = std::chrono::steady_clock::now();
-    return std::chrono::duration<double>(now - _start).count();
-}
-double Time::GetFPS() {
-    return 1.0 / _dt;
+double Time() {
+    if (!instance) {
+        MT_CORE_WARN("time/time.cpp: Time system not initialised.");
+        return 0.0;
+    }
+    return instance->Time();
 }
 
 } // time

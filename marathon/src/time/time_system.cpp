@@ -5,7 +5,7 @@ namespace marathon {
 namespace time {
 
 TimeSystem::TimeSystem()
-    : ITimeSystem("TimeSystem"),
+    : ITimeSystem("marathon.time.time_system"),
         _start(std::chrono::steady_clock::time_point()),
         _lastTick(std::chrono::steady_clock::time_point()) {}
 
@@ -17,9 +17,7 @@ bool TimeSystem::Init() {
     return true;
 }
 
-bool TimeSystem::Quit() {
-    return true;
-}
+void TimeSystem::Quit() {}
 
 double TimeSystem::Tick() {
     auto now = std::chrono::steady_clock::now();
@@ -28,7 +26,7 @@ double TimeSystem::Tick() {
     return dt;
 }
 
-double TimeSystem::GetTime() {
+double TimeSystem::Time() {
     auto now = std::chrono::steady_clock::now();
     return std::chrono::duration<double>(now - _start).count();
 }

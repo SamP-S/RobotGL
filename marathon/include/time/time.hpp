@@ -1,21 +1,19 @@
 #pragma once
 
-#include <string>
-#include <chrono>
-
+// internal
 #include "core/i_system.hpp"
 
 namespace marathon {
 
 namespace time {
 
+// system interface
 bool Init();
-bool Quit();
+void Quit();
 
+// time interface
 double Tick();
-double GetDeltaTime();
-double GetTime();
-double GetFPS();
+double Time();
 
 } // time
 

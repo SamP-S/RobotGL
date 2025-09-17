@@ -27,11 +27,11 @@ public:
 
     // system interface
     bool Init() override;
-    bool Quit() override;
+    void Quit() override;
 
     // time interface
     double Tick();
-    double GetTime();
+    double Time();
 };
 
 } // time

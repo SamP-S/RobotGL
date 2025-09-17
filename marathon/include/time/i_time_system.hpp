@@ -2,7 +2,6 @@
 
 // std lib
 #include <string>
-#include <chrono>
 
 // internal
 #include "core/i_system.hpp"
@@ -17,14 +16,12 @@ public:
     virtual ~ITimeSystem();
 
     // system interface
-    bool Init() override;
-    bool Quit() override;
+    virtual bool Init() = 0;
+    virtual void Quit() = 0;
 
     // time interface
-    double Tick();
-    double GetDeltaTime();
-    double GetTime();
-    double GetFPS();
+    virtual double Tick() = 0;
+    virtual double Time() = 0;
 };
 
 } // time
