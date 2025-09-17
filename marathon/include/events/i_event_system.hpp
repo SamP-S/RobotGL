@@ -10,6 +10,7 @@
 
 // internal
 #include "core/i_system.hpp"
+#include "events/event.hpp"
 
 namespace marathon {
 

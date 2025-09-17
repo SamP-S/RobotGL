@@ -51,8 +51,9 @@ bool SDL2EventSystem::PollEvent(Event& e) {
  */
 bool SDL2EventSystem::WaitEvent(Event& e) {
     SDL_Event sdl_e;
-	SDL_WaitEvent(&sdl_e);
+	int pending = SDL_WaitEvent(&sdl_e);
     Convert(sdl_e, e);
+    return pending;
 }
 
 /// TODO:

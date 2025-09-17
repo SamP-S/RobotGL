@@ -6,9 +6,6 @@ namespace marathon {
 ISystem::ISystem(SystemType type, const std::string& name)
     : _name(name), _type(type), _active(false) {}
 
-// Destructor
-ISystem::~ISystem() {}
-
 // Get if the module has been booted
 bool ISystem::IsActive() const {
     return _active;
