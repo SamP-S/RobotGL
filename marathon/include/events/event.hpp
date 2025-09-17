@@ -18,8 +18,8 @@ public:
     Event(const std::string& name, const std::unordered_map<std::string, EventProperty>& data);
     ~Event() = default;
 
-    const std::string name;
-    const std::unordered_map<std::string, EventProperty> data;
+    std::string name;
+    std::unordered_map<std::string, EventProperty> data;
 };
 
 } // events

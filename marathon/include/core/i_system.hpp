@@ -22,7 +22,7 @@ enum SystemType {
 class ISystem {
 public:
     ISystem(SystemType mType, const std::string& name);
-    virtual ~ISystem();
+    virtual ~ISystem() = default;
 
     // standard methods for safe booting and shutting down
     virtual bool Init() = 0;

@@ -18,11 +18,11 @@ namespace events {
 class IEventSystem : public ISystem {
 public:
     IEventSystem(const std::string& name);
-    virtual ~IEventSystem();
+    virtual ~IEventSystem() = default;
 
     // system interface
-    bool Init() override;
-    bool Quit() override;
+    virtual bool Init() = 0;
+    virtual bool Quit() = 0;
 
     // event interface
     virtual bool PollEvent(Event& e) = 0;

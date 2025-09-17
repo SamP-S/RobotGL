@@ -16,7 +16,7 @@ namespace events {
 namespace sdl2 {
 
 SDL2EventSystem::SDL2EventSystem()
-    : IEventSystem("marathon.events.sdl2_event_system") {}
+    : IEventSystem("marathon.events.sdl2.sdl2_event_system") {}
 
 SDL2EventSystem::~SDL2EventSystem() {}
 
@@ -42,7 +42,7 @@ bool SDL2EventSystem::Quit() {
 bool SDL2EventSystem::PollEvent(Event& e) {
     SDL_Event sdl_e;
     int pending = SDL_PollEvent(&sdl_e);
-    e = Convert(sdl_e);
+    Convert(sdl_e, e);
     return pending;
 }
 
@@ -52,7 +52,7 @@ bool SDL2EventSystem::PollEvent(Event& e) {
 bool SDL2EventSystem::WaitEvent(Event& e) {
     SDL_Event sdl_e;
 	SDL_WaitEvent(&sdl_e);
-    e = Convert(sdl_e);
+    Convert(sdl_e, e);
 }
 
 /// TODO:
