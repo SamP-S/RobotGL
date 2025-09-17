@@ -26,12 +26,14 @@ if (NOT EXISTS ${LIBTFD_DIR}/CMakeLists.txt)
 endif()
 
 # marathon engine
-set(MTN_INCLUDE_DIRS  "marathon/include")
+set(MTN_PUBLIC_INCLUDE_DIRS  "marathon/include")
+set(MTN_PRIVATE_INCLUDE_DIRS "marathon/src")
 file(GLOB_RECURSE MTN_SRC_FILES "marathon/src/**.cpp")
-message(STATUS "INCLUDE_DIRS: ${MTN_INCLUDE_DIRS}")
+message(STATUS "INCLUDE_DIRS: Public = ${MTN_PUBLIC_INCLUDE_DIRS}; Private = ${MTN_PRIVATE_INCLUDE_DIRS}")
 message(STATUS "SRC_FILES: ${MTN_SRC_FILES}")
 add_library(marathon "${MTN_SRC_FILES}")
-target_include_directories(marathon PUBLIC ${MTN_INCLUDE_DIRS})
+target_include_directories(marathon PUBLIC ${MTN_PUBLIC_INCLUDE_DIRS})
+target_include_directories(marathon PRIVATE ${MTN_PRIVATE_INCLUDE_DIRS})
 
 add_subdirectory("external/la")
 add_subdirectory("external/spdlog")
