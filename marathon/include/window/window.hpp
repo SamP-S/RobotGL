@@ -5,7 +5,7 @@ namespace marathon {
 namespace window {
 
 // window API facade
-bool Init();
+bool Init(BackendFlags flags);
 void Quit();
 
 enum WindowFlags : int32_t {

@@ -5,7 +5,7 @@ namespace marathon {
 namespace time {
 
 // system interface
-bool Init();
+bool Init(BackendFlags flags);
 void Quit();
 
 // time interface

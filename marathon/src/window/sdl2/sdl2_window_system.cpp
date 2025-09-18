@@ -30,7 +30,7 @@ SDL_Window* SDL2WindowSystem::FindWindow(WindowID win) {
 }
 
 
-bool SDL2WindowSystem::Init() {
+bool SDL2WindowSystem::Init(BackendFlags flags) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         MT_CORE_WARN("window/sdl2/sdl2_window_system.cpp: SDL_Init Error = {}", SDL_GetError());
         return false;
@@ -93,6 +93,7 @@ void SDL2WindowSystem::DestroyWindow(WindowID win) {
         return;
     }
     SDL_DestroyWindow(w);
+    _idTable.erase(win);
 }
 
 void SDL2WindowSystem::SwapFrame(WindowID win) {

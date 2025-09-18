@@ -13,14 +13,14 @@ namespace {
 }
 
 // system interface
-bool Init() {
+bool Init(BackendFlags flags) {
     if (instance) {
         MT_CORE_WARN("time/time.cpp: Cannot init an already initialised system.");
         return false;
     }
 
     instance = new TimeSystem();
-    if (!instance->Init()) {
+    if (!instance->Init(flags) {
         MT_CORE_ERROR("time/time.cpp: Failed to init time system.");
         delete instance;
         instance = nullptr;

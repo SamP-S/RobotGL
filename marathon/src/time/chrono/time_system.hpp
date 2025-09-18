@@ -26,7 +26,7 @@ public:
     virtual ~TimeSystem();
 
     // system interface
-    bool Init() override;
+    bool Init(BackendFlags flags) override;
     void Quit() override;
 
     // time interface
