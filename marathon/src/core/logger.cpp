@@ -2,8 +2,6 @@
 
 namespace marathon {
 
-namespace core {
-
 // define static loggers
 std::shared_ptr<spdlog::logger> Log::s_coreLogger;
 std::shared_ptr<spdlog::logger> Log::s_engineLogger;
@@ -54,7 +52,5 @@ std::shared_ptr<spdlog::logger> Log::GetUserLogger() {
     }
     return s_userLogger;
 }
-
-} // core
 
 } // marathon

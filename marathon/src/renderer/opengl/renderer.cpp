@@ -146,11 +146,9 @@ Renderer::~Renderer() {
 
 // module interface
 bool Renderer::Boot() {
-    _active = true;
     return true;
 }
 bool Renderer::Shutdown() {
-    _active = false;
     return true;
 }
 

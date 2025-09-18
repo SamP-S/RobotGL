@@ -6,8 +6,6 @@
 
 namespace marathon {
 
-namespace core {
-
 /// An object is a base class for all instanitable classes (resources & nodes)
 /// TODO: implement UUID from file, UUID currently copies during copy
 class Object {
@@ -25,7 +23,5 @@ public:
     void SetName(const std::string& name);
     std::string GetType() const;
 };
-
-} // core
 
 } // marathon

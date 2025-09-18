@@ -1,6 +1,7 @@
 #pragma once
 
 // internal
+#include "core/i_system.hpp"
 #include "events/event.hpp"
 
 namespace marathon {
@@ -8,7 +9,7 @@ namespace marathon {
 namespace events {
 
 // events API facade
-bool Init();
+bool Init(BackendFlags flags);
 void Quit();
 bool PollEvent(Event& e);
 bool WaitEvent(Event& e);

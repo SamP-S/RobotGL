@@ -5,7 +5,7 @@ namespace marathon {
 namespace events {
 
 IEventSystem::IEventSystem(const std::string& name)
-    : ISystem(core::SystemType::EVENTS, name) {}
+    : ISystem(SystemType::SYS_EVENTS, name) {}
 
 } // namespace events
 

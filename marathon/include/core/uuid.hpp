@@ -5,8 +5,6 @@
 #include <cmath>
 
 namespace marathon {
-    
-namespace core {
 
 //// TODO:
 // Add validation to ensure no possible reusage or UUID
@@ -47,7 +45,5 @@ public:
     operator int64_t() const { return (int64_t)_uuid; }
 
 };
-
-} // core
 
 } // marathon

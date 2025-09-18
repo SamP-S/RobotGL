@@ -18,7 +18,7 @@ public:
     SDL2EventSystem();
     ~SDL2EventSystem() override;
 
-    bool Init() override;
+    bool Init(BackendFlags flags) override;
     void Quit() override;
 
     bool PollEvent(Event& e) override;

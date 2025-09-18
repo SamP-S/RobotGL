@@ -11,8 +11,6 @@
 
 namespace marathon {
 
-namespace core {
-
 /// CONSIDER: should whether a node was created at runtime be stored in the node?
 
 // Node class as a base for all instances in a scene
@@ -35,7 +33,5 @@ public:
     std::shared_ptr<Node> FindChild(const std::string& name);
     std::vector<std::shared_ptr<Node>>& GetChildren();
 };
-
-} // core
 
 } // marathon

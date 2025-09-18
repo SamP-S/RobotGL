@@ -10,8 +10,6 @@
 
 namespace marathon {
 
-namespace core {
-
 /// NOTE: Inspired by the Log class from The Cherno's Hazel engine
 /// CONSIDER: wrapping all spdlog functionality in a logger class
 class Log {
@@ -42,35 +40,33 @@ public:
 };
 
 // Core log macros
-#define MT_CORE_TRACE(...)      ::marathon::core::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define MT_CORE_DEBUG(...)      ::marathon::core::Log::GetCoreLogger()->debug(__VA_ARGS__)
-#define MT_CORE_INFO(...)       ::marathon::core::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define MT_CORE_WARN(...)       ::marathon::core::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define MT_CORE_ERROR(...)      ::marathon::core::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define MT_CORE_CRITICAL(...)   ::marathon::core::Log::GetCoreLogger()->critical(__VA_ARGS__)
-#define MT_CORE_SET_LEVEL(lvl)  ::marathon::core::Log::GetCoreLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
-#define MT_CORE_GET_LEVEL()     static_cast<::marathon::core::Log::Level>(::marathon::core::Log::GetCoreLogger()->level())
+#define MT_CORE_TRACE(...)      ::marathon::Log::GetCoreLogger()->trace(__VA_ARGS__)
+#define MT_CORE_DEBUG(...)      ::marathon::Log::GetCoreLogger()->debug(__VA_ARGS__)
+#define MT_CORE_INFO(...)       ::marathon::Log::GetCoreLogger()->info(__VA_ARGS__)
+#define MT_CORE_WARN(...)       ::marathon::Log::GetCoreLogger()->warn(__VA_ARGS__)
+#define MT_CORE_ERROR(...)      ::marathon::Log::GetCoreLogger()->error(__VA_ARGS__)
+#define MT_CORE_CRITICAL(...)   ::marathon::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define MT_CORE_SET_LEVEL(lvl)  ::marathon::Log::GetCoreLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
+#define MT_CORE_GET_LEVEL()     static_cast<::marathon::Log::Level>(::marathon::Log::GetCoreLogger()->level())
 
 // Engine log macros
-#define MT_ENGINE_TRACE(...)        ::marathon::core::Log::GetEngineLogger()->trace(__VA_ARGS__)
-#define MT_ENGINE_DEBUG(...)        ::marathon::core::Log::GetEngineLogger()->debug(__VA_ARGS__)
-#define MT_ENGINE_INFO(...)         ::marathon::core::Log::GetEngineLogger()->info(__VA_ARGS__)
-#define MT_ENGINE_WARN(...)         ::marathon::core::Log::GetEngineLogger()->warn(__VA_ARGS__)
-#define MT_ENGINE_ERROR(...)        ::marathon::core::Log::GetEngineLogger()->error(__VA_ARGS__)
-#define MT_ENGINE_CRITICAL(...)     ::marathon::core::Log::GetEngineLogger()->critical(__VA_ARGS__)
-#define MT_ENGINE_SET_LEVEL(lvl)    ::marathon::core::Log::GetEngineLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
-#define MT_ENGINE_GET_LEVEL()       static_cast<::marathon::core::Log::Level>(::marathon::core::Log::GetEngineLogger()->level())
+#define MT_ENGINE_TRACE(...)        ::marathon::Log::GetEngineLogger()->trace(__VA_ARGS__)
+#define MT_ENGINE_DEBUG(...)        ::marathon::Log::GetEngineLogger()->debug(__VA_ARGS__)
+#define MT_ENGINE_INFO(...)         ::marathon::Log::GetEngineLogger()->info(__VA_ARGS__)
+#define MT_ENGINE_WARN(...)         ::marathon::Log::GetEngineLogger()->warn(__VA_ARGS__)
+#define MT_ENGINE_ERROR(...)        ::marathon::Log::GetEngineLogger()->error(__VA_ARGS__)
+#define MT_ENGINE_CRITICAL(...)     ::marathon::Log::GetEngineLogger()->critical(__VA_ARGS__)
+#define MT_ENGINE_SET_LEVEL(lvl)    ::marathon::Log::GetEngineLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
+#define MT_ENGINE_GET_LEVEL()       static_cast<::marathon::Log::Level>(::marathon::Log::GetEngineLogger()->level())
 
 // User log macros
-#define MT_TRACE(...)       ::marathon::core::Log::GetUserLogger()->trace(__VA_ARGS__)
-#define MT_DEBUG(...)       ::marathon::core::Log::GetUserLogger()->debug(__VA_ARGS__)
-#define MT_INFO(...)        ::marathon::core::Log::GetUserLogger()->info(__VA_ARGS__)
-#define MT_WARN(...)        ::marathon::core::Log::GetUserLogger()->warn(__VA_ARGS__)
-#define MT_ERROR(...)       ::marathon::core::Log::GetUserLogger()->error(__VA_ARGS__)
-#define MT_CRITICAL(...)    ::marathon::core::Log::GetUserLogger()->critical(__VA_ARGS__)
-#define MT_SET_LEVEL(lvl)   ::marathon::core::Log::GetUserLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
-#define MT_GET_LEVEL()      static_cast<::marathon::core::Log::Level>(::marathon::core::Log::GetUserLogger()->level())
-
-} // core
+#define MT_TRACE(...)       ::marathon::Log::GetUserLogger()->trace(__VA_ARGS__)
+#define MT_DEBUG(...)       ::marathon::Log::GetUserLogger()->debug(__VA_ARGS__)
+#define MT_INFO(...)        ::marathon::Log::GetUserLogger()->info(__VA_ARGS__)
+#define MT_WARN(...)        ::marathon::Log::GetUserLogger()->warn(__VA_ARGS__)
+#define MT_ERROR(...)       ::marathon::Log::GetUserLogger()->error(__VA_ARGS__)
+#define MT_CRITICAL(...)    ::marathon::Log::GetUserLogger()->critical(__VA_ARGS__)
+#define MT_SET_LEVEL(lvl)   ::marathon::Log::GetUserLogger()->set_level(static_cast<spdlog::level::level_enum>(lvl))
+#define MT_GET_LEVEL()      static_cast<::marathon::Log::Level>(::marathon::Log::GetUserLogger()->level())
 
 } // marathon

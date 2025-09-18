@@ -14,7 +14,7 @@ namespace {
 }
 
 // events API facade
-bool Init() {
+bool Init(BackendFlags flags) {
     if (instance) {
         MT_CORE_WARN("events/events.cpp: Cannot init an already initialised system.");
         return false;
@@ -22,7 +22,7 @@ bool Init() {
 
     /// TODO: replace with backend enum flags select
     instance = new sdl2::SDL2EventSystem();
-    if (!instance->Init()) {
+    if (!instance->Init(flags)) {
         MT_CORE_ERROR("events/events.cpp: Failed to init event system.");
         delete instance;
         instance = nullptr;

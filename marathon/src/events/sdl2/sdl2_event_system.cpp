@@ -20,19 +20,16 @@ SDL2EventSystem::SDL2EventSystem()
 
 SDL2EventSystem::~SDL2EventSystem() {}
 
-bool SDL2EventSystem::Init() {
+bool SDL2EventSystem::Init(BackendFlags flags) {
     if (SDL_Init(SDL_INIT_EVENTS) != 0) {
         MT_CORE_ERROR("events/sdl2/events.cpp: SDL_Init Error = {}", SDL_GetError());
-        _active = false;
         return false;
     }
-    _active = true;
     return true;
 }
 void SDL2EventSystem::Quit() {
     SDL_QuitSubSystem(SDL_INIT_EVENTS);
     // TODO: actually validate
-    _active = false;
 }
 
 /** @brief get next event in queue

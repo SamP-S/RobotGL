@@ -2,16 +2,9 @@
 
 namespace marathon {
 
-namespace core {
-
 // Constructor
 ISystem::ISystem(SystemType type, const std::string& name)
-    : _name(name), _type(type), _active(false) {}
-
-// Get if the module has been booted
-bool ISystem::IsActive() const {
-    return _active;
-}
+    : _name(name), _type(type) {}
 
 // Get the name of the module
 std::string ISystem::GetName() const {
@@ -22,7 +15,5 @@ std::string ISystem::GetName() const {
 SystemType ISystem::GetType() const {
     return _type;
 }
-
-} // core
 
 } // marathon

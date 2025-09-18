@@ -16,13 +16,13 @@ namespace marathon {
 
 namespace events {
 
-class IEventSystem : public core::ISystem {
+class IEventSystem : public ISystem {
 public:
     IEventSystem(const std::string& name);
     virtual ~IEventSystem() = default;
 
     // system interface
-    virtual bool Init() = 0;
+    virtual bool Init(BackendFlags flags) = 0;
     virtual void Quit() = 0;
 
     // event interface
