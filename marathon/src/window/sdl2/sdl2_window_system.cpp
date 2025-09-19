@@ -47,7 +47,9 @@ void SDL2WindowSystem::Quit() {
 }
 
 WindowID SDL2WindowSystem::CreateWindow(const std::string& title, int w, int h) {
-    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    /// TODO: write renderer dependent code
+    /// default to opengl for now
+    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
     SDL_Window* window = SDL_CreateWindow(
         title.c_str(),
@@ -72,7 +74,7 @@ WindowID SDL2WindowSystem::CreateWindow(const std::string& title, int w, int h) 
     }
 
     SDL_GL_MakeCurrent(window, context);
-    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetSwapInterval(0);
 
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
@@ -92,6 +94,8 @@ void SDL2WindowSystem::DestroyWindow(WindowID win) {
     if (!w) {
         return;
     }
+    SDL_GLContext context = SDL_GL_GetCurrentContext();
+    SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(w);
     _idTable.erase(win);
 }
