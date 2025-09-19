@@ -1,12 +1,26 @@
 #pragma once
 
+// std lib
+#include <variant>
+
 // internal
 #include "core/i_system.hpp"
-#include "events/event.hpp"
 
 namespace marathon {
 
 namespace events {
+
+typedef std::variant<int, float, double, bool, std::string> EventProperty;
+
+/// @brief Represents an event with a name and associated data.
+/// @details An event consists of constant data, so it cannot be modified.
+/// Events should be handled as is and discarded after use.
+struct Event {
+    std::string name;
+    std::unordered_map<std::string, EventProperty> data;
+
+    Event(const std::string& name, const std::unordered_map<std::string, EventProperty>& data);
+};
 
 // events API facade
 bool Init(BackendFlags flags);

@@ -13,6 +13,9 @@ namespace {
     static IEventSystem* instance = nullptr;
 }
 
+Event::Event(const std::string& name, const std::unordered_map<std::string, EventProperty>& data)
+    : name(name), data(data) {}
+
 // events API facade
 bool Init(BackendFlags flags) {
     if (instance) {
