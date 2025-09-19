@@ -3,6 +3,7 @@
 #include "time/time.hpp"
 #include "window/window.hpp"
 #include "events/events.hpp"
+#include "graphics/graphics.hpp"
 
 using namespace marathon;
 
@@ -40,8 +41,16 @@ int main() {
         
         // interactive tick
         double dt = time::Tick();
-        // user defined update
-        // FILL ME
+        double t = time::Time();
+        
+        // change bg colour over time
+        graphics::SetClearColour(
+            0.5f + 0.5f * sin(t),
+            0.5f + 0.5f * sin(t + 1),
+            0.5f + 0.5f * sin(t + 2),
+            1.0f
+        );
+        graphics::Clear();
         
         // swap frame shown
         window::SwapFrame(w);
