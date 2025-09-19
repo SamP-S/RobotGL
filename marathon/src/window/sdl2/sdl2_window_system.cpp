@@ -22,7 +22,7 @@ SDL2WindowSystem::SDL2WindowSystem()
 
 SDL_Window* SDL2WindowSystem::FindWindow(WindowID win) {
     auto it = _idTable.find(win);
-    if (it != _idTable.end()) {
+    if (it == _idTable.end()) {
         MT_CORE_WARN("window/sdl2/sdl2_window_system.cpp: Can't find window matching ID.");
         return nullptr;
     }
@@ -31,7 +31,7 @@ SDL_Window* SDL2WindowSystem::FindWindow(WindowID win) {
 
 
 bool SDL2WindowSystem::Init(BackendFlags flags) {
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
         MT_CORE_WARN("window/sdl2/sdl2_window_system.cpp: SDL_Init Error = {}", SDL_GetError());
         return false;
     }
@@ -43,7 +43,7 @@ void SDL2WindowSystem::Quit() {
         DestroyWindow(pair.first);
     }
     _idTable.clear();
-    SDL_Quit();
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 WindowID SDL2WindowSystem::CreateWindow(const std::string& title, int w, int h) {

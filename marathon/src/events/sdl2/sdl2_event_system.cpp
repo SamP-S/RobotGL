@@ -21,8 +21,8 @@ SDL2EventSystem::SDL2EventSystem()
 SDL2EventSystem::~SDL2EventSystem() {}
 
 bool SDL2EventSystem::Init(BackendFlags flags) {
-    if (SDL_Init(SDL_INIT_EVENTS) != 0) {
-        MT_CORE_ERROR("events/sdl2/events.cpp: SDL_Init Error = {}", SDL_GetError());
+    if (SDL_InitSubSystem(SDL_INIT_EVENTS) != 0) {
+        MT_CORE_ERROR("events/sdl2/sdl2_event_system.cpp: SDL_Init Error = {}", SDL_GetError());
         return false;
     }
     return true;

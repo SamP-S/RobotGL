@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <array>
 
+// external
+#include "SDL2/SDL.h"
+
 // internal
 #include "core/i_system.hpp"
 #include "core/logger.hpp"
@@ -30,19 +33,22 @@ int Init(BackendFlags flags) {
         return 4;
     }
 
+    SDL_Init(0);
+    
     // inits
-    if (!window::Init(flags))
+    if (window::Init(flags))
         num_sys--;
-    if (!events::Init(flags))
+    if (events::Init(flags))
         num_sys--;
-    if (!graphics::Init(flags))
+    if (graphics::Init(flags))
         num_sys--;
-    if (!time::Init(flags))
+    if (time::Init(flags))
         num_sys--;
     return num_sys;
 }
 
 int Quit() {
+    SDL_Quit();
     return 0;
 }
 
