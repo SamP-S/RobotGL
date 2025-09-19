@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 // external
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
 
 // internal

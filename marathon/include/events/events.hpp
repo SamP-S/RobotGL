@@ -19,6 +19,7 @@ struct Event {
     std::string name;
     std::unordered_map<std::string, EventProperty> data;
 
+    Event() = default;
     Event(const std::string& name, const std::unordered_map<std::string, EventProperty>& data);
 };
 

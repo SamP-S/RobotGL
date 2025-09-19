@@ -20,7 +20,7 @@ bool Init(BackendFlags flags) {
     }
 
     instance = new TimeSystem();
-    if (!instance->Init(flags) {
+    if (!instance->Init(flags)) {
         MT_CORE_ERROR("time/time.cpp: Failed to init time system.");
         delete instance;
         instance = nullptr;

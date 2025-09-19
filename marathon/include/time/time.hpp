@@ -1,5 +1,8 @@
 #pragma once
 
+// internal
+#include "core/i_system.hpp"
+
 namespace marathon {
 
 namespace time {

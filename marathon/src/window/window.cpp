@@ -44,8 +44,20 @@ void Quit() {
 }
 
 // renderer
-void* GetRenderContext(WindowID windowID) {}
-void* GetNativeWindow(WindowID windowID) {}
+void* GetRenderContext(WindowID windowID) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return nullptr;
+    }
+    return instance->GetRenderContext(windowID);
+}
+void* GetNativeWindow(WindowID windowID) {
+   if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return nullptr;
+    }
+    return instance->GetNativeWindow(windowID);
+}
 void SwapFrame(WindowID windowID) {
     if (!instance) {
         MT_CORE_WARN("window/window.cpp: Window system not instanced.");
