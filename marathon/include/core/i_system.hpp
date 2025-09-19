@@ -12,7 +12,7 @@ enum SystemType {
     SYS_WINDOW,
     SYS_INPUT,
     SYS_MATHS,
-    SYS_RENDERER,
+    SYS_GRAPHICS,
     SYS_AUDIO,
     SYS_EVENTS,
     SYS_TIME,
