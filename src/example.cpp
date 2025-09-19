@@ -22,20 +22,9 @@ int main() {
         // fetch events from backend ready for polling
         events::Event event;
         while (events::PollEvent(event)) {
-            for (const auto& [key, value] : event.data) {
-                if (std::holds_alternative<int>(value)) {
-                    std::cout << "Key: " << key << ", Value: " << std::get<int>(value) << std::endl;
-                } else if (std::holds_alternative<float>(value)) {
-                    std::cout << "Key: " << key << ", Value: " << std::get<float>(value) << std::endl;
-                } else if (std::holds_alternative<double>(value)) {
-                    std::cout << "Key: " << key << ", Value: " << std::get<double>(value) << std::endl;
-                } else if (std::holds_alternative<bool>(value)) {
-                    std::cout << "Key: " << key << ", Value: " << (std::get<bool>(value) ? "true" : "false") << std::endl;
-                } else if (std::holds_alternative<std::string>(value)) {
-                    std::cout << "Key: " << key << ", Value: " << std::get<std::string>(value) << std::endl;
-                } else {
-                    std::cout << "Key: " << key << ", Value: [unknown type]" << std::endl;
-                }
+            std::cout << event << std::endl;
+            if (event.name == "quit") {
+                isQuit = true;
             }
         }
         
