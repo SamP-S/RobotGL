@@ -9,6 +9,7 @@ namespace window {
 
 typedef uint32_t WindowID;
 
+// impl window flags
 enum WindowFlags : int32_t {
     WINDOW_NO_FLAGS             = 0x00,
     WINDOW_FULLSCREEN           = 0x01,
@@ -24,7 +25,7 @@ bool Init(BackendFlags flags);
 void Quit();
 
 // window API facade
-WindowID CreateWindow(const std::string& title, int w, int h, WindowFlags flags);
+WindowID CreateWindow(const std::string& title, int w, int h);
 void DestroyWindow(WindowID win);
 void* GetRenderContext(WindowID win);
 void* GetNativeWindow(WindowID win);

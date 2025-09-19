@@ -44,6 +44,22 @@ void Quit() {
 }
 
 // renderer
+WindowID CreateWindow(const std::string& title, int w, int h) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return 0;
+    }
+    return instance->CreateWindow(title, w, h);
+}
+
+void DestroyWindow(WindowID win) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->DestroyWindow(win);
+}
+
 void* GetRenderContext(WindowID windowID) {
     if (!instance) {
         MT_CORE_WARN("window/window.cpp: Window system not instanced.");
@@ -122,15 +138,6 @@ void Hide(WindowID windowID) {
         return;
     }
     instance->Hide(windowID);
-}
-
-WindowID CreateWindow(const std::string& title, int w, int h, WindowFlags flags);
-void DestroyWindow(WindowID win) {
-    if (!instance) {
-        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
-        return;
-    }
-    instance->DestroyWindow(win);
 }
 
 } // window

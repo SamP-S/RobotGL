@@ -13,7 +13,7 @@ namespace time {
 class ITimeSystem : public ISystem {
 public:
     ITimeSystem(const std::string& name);
-    virtual ~ITimeSystem();
+    virtual ~ITimeSystem() = default;
 
     // system interface
     virtual bool Init(BackendFlags flags) = 0;

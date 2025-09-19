@@ -8,11 +8,12 @@ using namespace marathon;
 
 int main() {
     // init
-    if (Init(0) != 0) {
+    BackendFlags flags = Backends::SDL2 | Backends::OPENGL;
+    if (Init(flags) != 0) {
         MT_ENGINE_CRITICAL("App::Boot(): Failed to initialise marathon. :(");
         return 1;
     }
-    window::WindowID w = window::CreateWindow("example", 400, 300, window::WindowFlags::WINDOW_NO_FLAGS);
+    window::WindowID w = window::CreateWindow("example", 400, 300);
 
     // update
     bool isQuit = false;
