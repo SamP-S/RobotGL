@@ -1,11 +1,10 @@
 #include "graphics/opengl/gl_graphics_system.hpp"
 
-// external
-#include <GL/glew.h>
-
 namespace marathon {
 
 namespace graphics {
+
+namespace gl {
 
 GLGraphicsSystem::GLGraphicsSystem()
     : IGraphicsSystem("marathon.graphics.gl_graphics_system") {}
@@ -28,6 +27,8 @@ void GLGraphicsSystem::Clear() {
 void GLGraphicsSystem::SetClearColour(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
+
+} // gl
 
 } // graphics
 

@@ -1,7 +1,11 @@
 #pragma once
 
+// std lib
+#include <string>
+
 // internal
 #include "core/i_system.hpp"
+#include "graphics/graphics.hpp"
 
 namespace marathon {
 
