@@ -5,12 +5,11 @@
 
 // internal
 #include "core/i_system.hpp"
+#include "window/window.hpp"
 
 namespace marathon {
 
 namespace window {
-
-typedef uint32_t WindowID;
 
 class IWindowSystem : public ISystem {
 public:
@@ -24,8 +23,9 @@ public:
     // window interface
     virtual WindowID CreateWindow(const std::string& title, int w, int h) = 0;
     virtual void DestroyWindow(WindowID win) = 0;
+    virtual void* GetRenderContext(WindowID win) = 0;
+    virtual void* GetNativeWindow(WindowID win) = 0;
     virtual void SwapFrame(WindowID win) = 0;
-    virtual void* GetContext(WindowID win) = 0;
     virtual void SetWindowMinSize(WindowID win, int minWidth, int minHeight) = 0;
     virtual void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight) = 0;
     virtual void SetWindowSize(WindowID win, int width, int height) = 0;

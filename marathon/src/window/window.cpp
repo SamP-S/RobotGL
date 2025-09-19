@@ -1,21 +1,126 @@
 #include "window/window.hpp"
-#include "window/sdl2/window.hpp"
+
+// internal
+#include "core/logger.hpp"
+#include "window/i_window_system.hpp"
+#include "window/sdl2/sdl2_window_system.hpp"
 
 namespace marathon {
 
 namespace window {
 
-Window::Window(const std::string& name)
-: Module(ModuleType::WINDOW, name) {}
+namespace {
+    static IWindowSystem* instance = nullptr;
+}
 
-// renderer is singleton
-Window& Window::Instance() {
-    static Window* instance;
-    if (!instance)
-        instance = new marathon::window::sdl2::Window();
-    return *instance;
+// events API facade
+bool Init(BackendFlags flags) {
+    if (instance) {
+        MT_CORE_WARN("window/window.cpp: Cannot init an already initialised system.");
+        return false;
+    }
+
+    /// TODO: replace with backend enum flags select
+    instance = new sdl2::SDL2WindowSystem();
+    if (!instance->Init(flags)) {
+        MT_CORE_ERROR("window/window.cpp: Failed to init event system.");
+        delete instance;
+        instance = nullptr;
+        return false;
+    }
+
+    return true;
+}
+
+void Quit() {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Cannot quit an uninitialised system.");
+        return;
+    }
+
+    instance->Quit();
+    delete instance;
+    instance = nullptr;
+}
+
+// renderer
+void* GetRenderContext(WindowID windowID) {}
+void* GetNativeWindow(WindowID windowID) {}
+void SwapFrame(WindowID windowID) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->SwapFrame(windowID);
+}
+
+// getter/setters
+void SetWindowMinSize(WindowID windowID, int minWidth, int minHeight) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->SetWindowMinSize(windowID, minWidth, minHeight);
+}
+void GetWindowMinSize(WindowID windowID, int& minWidth, int& minHeight) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->GetWindowMinSize(windowID, minWidth, minHeight);
+}
+void SetWindowSize(WindowID windowID, int width, int height) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->SetWindowSize(windowID, width, height);
+}
+void GetWindowSize(WindowID windowID, int& width, int& height) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->GetWindowSize(windowID, width, height);
+}
+void SetCursorCapture(WindowID windowID, bool capture) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->SetCursorCapture(windowID, capture);
+}
+bool GetCursorCapture(WindowID windowID) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return false;
+    }
+    return instance->GetCursorCapture(windowID);
+}
+void Show(WindowID windowID) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->Show(windowID);
+}
+void Hide(WindowID windowID) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->Hide(windowID);
+}
+
+WindowID CreateWindow(const std::string& title, int w, int h, WindowFlags flags);
+void DestroyWindow(WindowID win) {
+    if (!instance) {
+        MT_CORE_WARN("window/window.cpp: Window system not instanced.");
+        return;
+    }
+    instance->DestroyWindow(win);
 }
 
 } // window
-
+    
 } // marathon

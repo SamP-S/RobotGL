@@ -1,44 +1,42 @@
 #pragma once
 
+// internal
+#include "core/i_system.hpp"
+
 namespace marathon {
 
 namespace window {
 
-// window API facade
+typedef uint32_t WindowID;
+
+enum WindowFlags : int32_t {
+    WINDOW_NO_FLAGS             = 0x00,
+    WINDOW_FULLSCREEN           = 0x01,
+    WINDOW_OCCLUDED             = 0x02,
+    WINDOW_HIDDEN               = 0x04,
+    WINDOW_RESIZABLE            = 0x08,
+    WINDOW_MINIMIZED            = 0x10,
+    WINDOW_MAXIMIZED            = 0x20,
+};
+
+// system interface
 bool Init(BackendFlags flags);
 void Quit();
 
-enum WindowFlags : int32_t {
-    WINDOW_NO_FLAGS             = 0x01 << 0,
-    WINDOW_FULLSCREEN           = 0x01 << 1,
-    WINDOW_OCCLUDED             = 0x01 << 2,
-    WINDOW_HIDDEN               = 0x01 << 3,
-    WINDOW_RESIZABLE            = 0x01 << 4,
-    WINDOW_MINIMIZED            = 0x01 << 5,
-    WINDOW_MAXIMIZED            = 0x01 << 6,
-};
-
-class Window {
-private:
-
-public:
-    // renderer
-    void* GetGLContext();
-    void SwapFrame();
-
-    // getter/setters
-    void SetWindowMinSize(int minWidth, int minHeight);
-    void GetWindowMinSize(int& minWidth, int& minHeight);
-    void SetWindowSize(int width, int height);
-    void GetWindowSize(int& width, int& height);
-    void SetCursorCapture(bool capture);
-    bool GetCursorCapture();
-    void Show();
-    void Hide();
-};
-
-Window* CreateWindow(const std::string& title, int w, int h, WindowFlags flags);
-void DestroyWindow();
+// window API facade
+WindowID CreateWindow(const std::string& title, int w, int h, WindowFlags flags);
+void DestroyWindow(WindowID win);
+void* GetRenderContext(WindowID win);
+void* GetNativeWindow(WindowID win);
+void SwapFrame(WindowID win);
+void SetWindowMinSize(WindowID win, int minWidth, int minHeight);
+void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight);
+void SetWindowSize(WindowID win, int width, int height);
+void GetWindowSize(WindowID win, int& width, int& height);
+void SetCursorCapture(WindowID win, bool capture);
+bool GetCursorCapture(WindowID win);
+void Show(WindowID win);
+void Hide(WindowID win);
 
 } // window
     

@@ -17,7 +17,7 @@ namespace sdl2 {
 
 class SDL2WindowSystem : public IWindowSystem {
 private:
-    int _nextID = 0;
+    int _nextID = 1;
     std::unordered_map<WindowID, SDL_Window*> _idTable = {};
     
     SDL_Window* FindWindow(WindowID win);
@@ -33,8 +33,9 @@ public:
     // window interface
     WindowID CreateWindow(const std::string& title, int w, int h) override;
     void DestroyWindow(WindowID win) override;
+    void* GetRenderContext(WindowID win) override;
+    void* GetNativeWindow(WindowID win) override;
     void SwapFrame(WindowID win) override;
-    void* GetContext(WindowID win) override;
     void SetWindowMinSize(WindowID win, int minWidth, int minHeight) override;
     void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight) override;
     void SetWindowSize(WindowID win, int width, int height) override;

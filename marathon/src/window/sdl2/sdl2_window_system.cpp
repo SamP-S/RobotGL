@@ -56,8 +56,8 @@ WindowID SDL2WindowSystem::CreateWindow(const std::string& title, int w, int h) 
         window_flags);
 
     if (!window) {
-        std::cerr << "SDL2WindowSystem: Failed to create window: " << SDL_GetError() << std::endl;
-        throw std::runtime_error("Failed to create SDL window");
+        MT_CORE_ERROR("window/sdl2/sdl2_window_system.cpp: SDL_CreateWindow error = {}", SDL_GetError());
+        return 0;
     }
 
     WindowID id = _nextID++;
@@ -96,20 +96,24 @@ void SDL2WindowSystem::DestroyWindow(WindowID win) {
     _idTable.erase(win);
 }
 
+void* SDL2WindowSystem::GetRenderContext(WindowID win) {
+    SDL_Window* w = FindWindow(win);
+    if (!w) {
+        return nullptr;
+    }
+    return SDL_GL_GetCurrentContext();
+}
+
+void* SDL2WindowSystem::GetNativeWindow(WindowID win) {
+    return static_cast<void*>(FindWindow(win));
+}
+
 void SDL2WindowSystem::SwapFrame(WindowID win) {
     SDL_Window* w = FindWindow(win);
     if (!w) {
         return;
     }
     SDL_GL_SwapWindow(w);
-}
-
-void* SDL2WindowSystem::GetContext(WindowID win) {
-    SDL_Window* w = FindWindow(win);
-    if (!w) {
-        return nullptr;
-    }
-    return SDL_GL_GetCurrentContext();
 }
 
 void SDL2WindowSystem::SetWindowMinSize(WindowID win, int minWidth, int minHeight) {
