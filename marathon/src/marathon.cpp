@@ -24,7 +24,7 @@ const std::array<int, 4> validBackends = {
     SDL2 | VULKAN
 };
 
-int Init(BackendFlags flags) {
+int Init() {
     int num_sys = 4;
 
     // Initialize systems with the provided backend flags

@@ -5,7 +5,7 @@ namespace marathon {
 namespace graphics {
 
 IGraphicsSystem::IGraphicsSystem(const std::string& name)
-    : ISystem(SystemType::SYS_GRAPHICS, name) {}
+    : ISystem(SystemID::SYS_GRAPHICS, name) {}
 
 } // graphics
 

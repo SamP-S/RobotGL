@@ -13,7 +13,7 @@ namespace {
 }
 
 // system interface
-bool Init(BackendFlags flags) {
+bool Init() {
     if (instance) {
         MT_CORE_WARN("time/time.cpp: Cannot init an already initialised system.");
         return false;

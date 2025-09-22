@@ -16,7 +16,7 @@ public:
     virtual ~ITimeSystem() = default;
 
     // system interface
-    virtual bool Init(BackendFlags flags) = 0;
+    virtual bool Init() = 0;
     virtual void Quit() = 0;
 
     // time interface

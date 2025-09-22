@@ -8,7 +8,7 @@ namespace marathon {
 namespace graphics {
 
 // system interface
-bool Init(BackendFlags flags);
+bool Init();
 void Quit();
 
 // graphics API facade

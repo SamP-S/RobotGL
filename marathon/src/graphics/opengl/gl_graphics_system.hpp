@@ -22,7 +22,7 @@ public:
     ~GLGraphicsSystem() = default;
 
     // system interface
-    bool Init(BackendFlags flags) override;
+    bool Init() override;
     void Quit() override;
 
     // grpahics interface

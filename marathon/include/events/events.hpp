@@ -38,7 +38,7 @@ struct Event {
 std::ostream& operator<<(std::ostream& os, const Event& event);
 
 // events API facade
-bool Init(BackendFlags flags);
+bool Init();
 void Quit();
 bool PollEvent(Event& e);
 bool WaitEvent(Event& e);

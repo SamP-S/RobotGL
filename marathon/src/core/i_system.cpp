@@ -3,8 +3,8 @@
 namespace marathon {
 
 // Constructor
-ISystem::ISystem(SystemType type, const std::string& name)
-    : _name(name), _type(type) {}
+ISystem::ISystem(SystemID type, const std::string& name)
+    : _name(name), _sys_id(type) {}
 
 // Get the name of the module
 std::string ISystem::GetName() const {
@@ -12,8 +12,8 @@ std::string ISystem::GetName() const {
 }
 
 // Get the type of the module
-SystemType ISystem::GetType() const {
-    return _type;
+SystemID ISystem::GetSystemID() const {
+    return _sys_id;
 }
 
 } // marathon

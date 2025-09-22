@@ -30,7 +30,7 @@ SDL_Window* SDL2WindowSystem::FindWindow(WindowID win) {
 }
 
 
-bool SDL2WindowSystem::Init(BackendFlags flags) {
+bool SDL2WindowSystem::Init() {
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
         MT_CORE_WARN("window/sdl2/sdl2_window_system.cpp: SDL_Init Error = {}", SDL_GetError());
         return false;

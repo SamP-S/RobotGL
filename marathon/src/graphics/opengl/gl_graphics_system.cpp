@@ -10,7 +10,7 @@ GLGraphicsSystem::GLGraphicsSystem()
     : IGraphicsSystem("marathon.graphics.gl_graphics_system") {}
 
 // system interface
-bool GLGraphicsSystem::Init(BackendFlags flags) {
+bool GLGraphicsSystem::Init() {
     // create opengl resources
     return true;
 }

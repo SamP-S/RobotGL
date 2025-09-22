@@ -4,6 +4,7 @@
 #include "core/logger.hpp"
 #include "events/i_event_system.hpp"
 #include "events/sdl2/sdl2_event_system.hpp"
+#include "backend_manager.hpp"
 
 namespace marathon {
 
@@ -11,6 +12,9 @@ namespace events {
 
 namespace {
     static IEventSystem* instance = nullptr;
+    // IEventSystem* instance() {
+    //     return BackendManager::GetSystem<IEventSystem*>(SYS_EVENTS);
+    // }
 }
 
 std::ostream& operator<<(std::ostream& os, const EventProperty& ep) {
@@ -36,7 +40,7 @@ std::ostream& operator<<(std::ostream& os, const Event& event) {
 }
 
 // events API facade
-bool Init(BackendFlags flags) {
+bool Init() {
     if (instance) {
         MT_CORE_WARN("events/events.cpp: Cannot init an already initialised system.");
         return false;

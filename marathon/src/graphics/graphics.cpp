@@ -14,7 +14,7 @@ namespace {
 }
 
 // system interface
-bool Init(BackendFlags flags) {
+bool Init() {
     if (instance) {
         MT_CORE_WARN("graphics/graphics.cpp: Cannot init an already init system.");
         return false;

@@ -14,7 +14,7 @@ namespace {
 }
 
 // events API facade
-bool Init(BackendFlags flags) {
+bool Init() {
     if (instance) {
         MT_CORE_WARN("window/window.cpp: Cannot init an already initialised system.");
         return false;

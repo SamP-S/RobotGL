@@ -21,7 +21,7 @@ enum WindowFlags : int32_t {
 };
 
 // system interface
-bool Init(BackendFlags flags);
+bool Init();
 void Quit();
 
 // window API facade

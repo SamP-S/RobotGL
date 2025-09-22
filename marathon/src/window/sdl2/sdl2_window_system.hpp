@@ -28,7 +28,7 @@ public:
     ~SDL2WindowSystem() = default;
     
     // system interface
-    bool Init(BackendFlags flags) override;
+    bool Init() override;
     void Quit() override;
 
     // window interface

@@ -11,7 +11,7 @@ TimeSystem::TimeSystem()
 
 TimeSystem::~TimeSystem() {}
 
-bool TimeSystem::Init(BackendFlags flags) {
+bool TimeSystem::Init() {
     _start = std::chrono::steady_clock::now();
     _lastTick = _start;
     return true;
