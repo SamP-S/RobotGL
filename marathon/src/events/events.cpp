@@ -12,9 +12,6 @@ namespace events {
 
 namespace {
     static IEventSystem* instance = nullptr;
-    // IEventSystem* instance() {
-    //     return BackendManager::GetSystem<IEventSystem*>(SYS_EVENTS);
-    // }
 }
 
 std::ostream& operator<<(std::ostream& os, const EventProperty& ep) {
@@ -46,9 +43,8 @@ bool Init() {
         return false;
     }
 
-    /// TODO: replace with backend enum flags select
-    instance = new sdl2::SDL2EventSystem();
-    if (!instance->Init(flags)) {
+    instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
+    if (!instance->Init()) {
         MT_CORE_ERROR("events/events.cpp: Failed to init event system.");
         delete instance;
         instance = nullptr;

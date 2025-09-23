@@ -14,16 +14,31 @@ namespace marathon {
 
 class BackendManager {
 public:
+    static BackendManager& Instance();
 
-    void Init(BackendFlags flags = SDL2 | OPENGL);
+    bool Impl(BackendFlags flags = SDL2 | OPENGL);
+    bool Init();
     void Quit();
     
     template<typename T>
     T* GetSystem(SystemID sys);
 
 private:
-    std::array<ISystem*, SystemID::SYS_MAX_ENUM> _systems = { nullptr };
+    BackendManager() = default;
+    ~BackendManager() = default;
 
+    BackendManager(const BackendManager&) = delete;
+    BackendManager& operator=(const BackendManager&) = delete;
+
+    bool _valid_impl = false;
+
+    const std::array<int, 4> valid_backends = {
+        GLFW | OPENGL,
+        GLFW | VULKAN,
+        SDL2 | OPENGL,
+        SDL2 | VULKAN
+    };
+    std::array<ISystem*, SystemID::SYS_MAX_ENUM> _systems = { nullptr };
 };
 
 }
