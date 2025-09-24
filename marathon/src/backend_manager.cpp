@@ -62,7 +62,10 @@ bool BackendManager::Init() {
         MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
         return false;
     }
-    MT_CORE_INFO("backend_manager.cpp: backend impl manager init.");
+    GetSystem<time::ITimeSystem>(SYS_TIME)->Init();
+    GetSystem<window::IWindowSystem>(SYS_WINDOW)->Init();
+    GetSystem<events::IEventSystem>(SYS_EVENTS)->Init();
+    GetSystem<graphics::IGraphicsSystem>(SYS_GRAPHICS)->Init();
 }
 
 void BackendManager::Quit() {
@@ -70,7 +73,10 @@ void BackendManager::Quit() {
         MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
         return;
     }
-    MT_CORE_INFO("backend_manager.cpp: backend impl manager quitting.");
+    GetSystem<graphics::IGraphicsSystem>(SYS_GRAPHICS)->Quit();
+    GetSystem<events::IEventSystem>(SYS_EVENTS)->Quit();
+    GetSystem<window::IWindowSystem>(SYS_WINDOW)->Quit();
+    GetSystem<time::ITimeSystem>(SYS_TIME)->Quit();
 }
 
 template<typename T>
