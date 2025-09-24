@@ -29,9 +29,10 @@ int main() {
         // fetch events from backend ready for polling
         events::Event event;
         while (events::PollEvent(event)) {
-            std::cout << event << std::endl;
             if (event.name == "quit") {
                 isQuit = true;
+            } else if (event.name == "key.down" || event.name == "key.up") {
+                std::cout << event << std::endl;
             }
         }
         
@@ -53,8 +54,5 @@ int main() {
     }
 
     // deinit
-    if (Quit() != 0) {
-        MT_ENGINE_CRITICAL("App::Shutdown(): Failed to initialise marathon. :(");
-        return 1;
-    }
+    Quit();
 };

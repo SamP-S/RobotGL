@@ -10,10 +10,6 @@ namespace marathon {
 
 namespace events {
 
-namespace {
-    static IEventSystem* instance = nullptr;
-}
-
 std::ostream& operator<<(std::ostream& os, const EventProperty& ep) {
     std::visit([&os](const auto& value) {
         if constexpr (std::is_same_v<decltype(value), bool>) {
@@ -38,44 +34,33 @@ std::ostream& operator<<(std::ostream& os, const Event& event) {
 
 // events API facade
 bool Init() {
-    if (instance) {
-        MT_CORE_WARN("events/events.cpp: Cannot init an already initialised system.");
+    auto* instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
+    if (!instance) {
         return false;
     }
-
-    instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
-    if (!instance->Init()) {
-        MT_CORE_ERROR("events/events.cpp: Failed to init event system.");
-        delete instance;
-        instance = nullptr;
-        return false;
-    }
-
-    return true;
+    return instance->Init();
 }
 
 void Quit() {
+    auto* instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
     if (!instance) {
-        MT_CORE_WARN("events/events.cpp: Cannot quit an uninitialised system.");
         return;
     }
 
     instance->Quit();
-    delete instance;
-    instance = nullptr;
 }
 
 bool PollEvent(Event& e) {
+    auto* instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
     if (!instance) {
-        MT_CORE_WARN("events/events.cpp: Event system not initialised.");
         return false;
     }
     return instance->PollEvent(e);
 }
 
 bool WaitEvent(Event& e) {
+    auto* instance = BackendManager::Instance().GetSystem<IEventSystem>(SYS_EVENTS);
     if (!instance) {
-        MT_CORE_WARN("events/events.cpp: Event system not initialised.");
         return false;
     }
     return instance->WaitEvent(e);

@@ -30,7 +30,7 @@ private:
     BackendManager(const BackendManager&) = delete;
     BackendManager& operator=(const BackendManager&) = delete;
 
-    bool _valid_impl = false;
+    // bool _valid_impl = false;
     std::array<ISystem*, SystemID::SYS_MAX_ENUM> _systems = { nullptr };
 };
 
