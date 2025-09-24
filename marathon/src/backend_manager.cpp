@@ -23,7 +23,8 @@ bool BackendManager::Impl(BackendFlags flags) {
     // impl window context
     switch (flags & Backends::WINDOW) {
         case Backends::GLFW:
-            MT_CORE_WARN("backend_manager.cpp: Window context backend = GLFW (Not Implemented).");
+            MT_CORE_ERROR("backend_manager.cpp: Window context backend = GLFW (Not Implemented).");
+            return false;
             break;
         case Backends::SDL2:
             MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2.");
@@ -31,6 +32,7 @@ bool BackendManager::Impl(BackendFlags flags) {
             _systems[SYS_EVENTS] = new events::sdl2::SDL2EventSystem();
         default:
             MT_CORE_ERROR("backend_manager.cpp: Window context backend = INVALID.");
+            return false;
             break;
     }
     // impl graphics api
@@ -40,10 +42,12 @@ bool BackendManager::Impl(BackendFlags flags) {
             _systems[SYS_GRAPHICS] = new graphics::gl::GLGraphicsSystem();
             break;
         case Backends::VULKAN:
-            MT_CORE_WARN("backend_manager.cpp: Graphics API = Vulkan (Not Implemented).");
+            MT_CORE_ERROR("backend_manager.cpp: Graphics API = Vulkan (Not Implemented).");
+            return false;
             break;
         default:
             MT_CORE_ERROR("backend_manager.cpp: Graphics API = INVALID.");
+            return false;
             break;
     }
     // impl gui
@@ -55,6 +59,7 @@ bool BackendManager::Impl(BackendFlags flags) {
             MT_CORE_WARN("backend_manager.cpp: Gui library = No Gui.");
             break;
     }
+    return true;
 }
 
 bool BackendManager::Init() {
@@ -66,6 +71,7 @@ bool BackendManager::Init() {
     GetSystem<window::IWindowSystem>(SYS_WINDOW)->Init();
     GetSystem<events::IEventSystem>(SYS_EVENTS)->Init();
     GetSystem<graphics::IGraphicsSystem>(SYS_GRAPHICS)->Init();
+    return true;
 }
 
 void BackendManager::Quit() {
@@ -82,7 +88,7 @@ void BackendManager::Quit() {
 template<typename T>
 T* BackendManager::GetSystem(SystemID sys) {
     if (!_systems[sys]) {
-        MT_CORE_ERROR("backend_manager.cpp: no backend imp for system ({})", sys);
+        MT_CORE_ERROR("backend_manager.cpp: no backend imp for system ({})", (int32_t)sys);
         return nullptr;
     }
     return static_cast<T*>(_systems[sys]);
