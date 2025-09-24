@@ -2,6 +2,10 @@
 
 // internal
 #include "core/logger.hpp"
+#include "graphics/opengl/gl_graphics_system.hpp"
+#include "window/sdl2/sdl2_window_system.hpp"
+#include "time/chrono/time_system.hpp"
+#include "events/sdl2/sdl2_event_system.hpp"
 
 namespace marathon {
 
@@ -11,17 +15,61 @@ BackendManager& BackendManager::Instance() {
 }
 
 bool BackendManager::Impl(BackendFlags flags) {
-    MT_CORE_INFO("backend_manager.cpp: backend impl manager impl.");
+    /// TODO: clear backend impl*
+
+    // impl time system
+    _systems[SYS_TIME] = new time::chrono::TimeSystem();
+
+    // impl window context
+    switch (flags & Backends::WINDOW) {
+        case Backends::GLFW:
+            MT_CORE_WARN("backend_manager.cpp: Window context backend = GLFW (Not Implemented).");
+            break;
+        case Backends::SDL2:
+            MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2.");
+            _systems[SYS_WINDOW] = new window::sdl2::SDL2WindowSystem();
+            _systems[SYS_EVENTS] = new events::sdl2::SDL2EventSystem();
+        default:
+            MT_CORE_ERROR("backend_manager.cpp: Window context backend = INVALID.");
+            break;
+    }
+    // impl graphics api
+    switch (flags & Backends::GRAPHICS) {
+        case Backends::OPENGL:
+            MT_CORE_INFO("backend_manager.cpp: Graphics API = OpenGL.");
+            _systems[SYS_GRAPHICS] = new graphics::gl::GLGraphicsSystem();
+            break;
+        case Backends::VULKAN:
+            MT_CORE_WARN("backend_manager.cpp: Graphics API = Vulkan (Not Implemented).");
+            break;
+        default:
+            MT_CORE_ERROR("backend_manager.cpp: Graphics API = INVALID.");
+            break;
+    }
+    // impl gui
+    switch (flags & Backends::GUI) {
+        case Backends::IMGUI:
+            MT_CORE_WARN("backend_manager.cpp: Gui library = ImGui.");
+            break;
+        default:
+            MT_CORE_WARN("backend_manager.cpp: Gui library = No Gui.");
+            break;
+    }
 }
 
 bool BackendManager::Init() {
     if (!_valid_impl) {
         MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
+        return false;
     }
     MT_CORE_INFO("backend_manager.cpp: backend impl manager init.");
 }
 
 void BackendManager::Quit() {
+    if (!_valid_impl) {
+        MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
+        return;
+    }
     MT_CORE_INFO("backend_manager.cpp: backend impl manager quitting.");
 }
 

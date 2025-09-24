@@ -11,6 +11,8 @@ namespace marathon {
 
 namespace time {
 
+namespace chrono {
+
 /// NOTE:
 // use steady_clock as it is monotonic
 // otherwise the clock jumps around
@@ -33,6 +35,8 @@ public:
     double Tick();
     double Time();
 };
+
+} // chrono
 
 } // time
 

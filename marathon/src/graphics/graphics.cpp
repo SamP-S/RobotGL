@@ -21,7 +21,7 @@ bool Init() {
     }
 
     instance = new gl::GLGraphicsSystem();
-    if (!instance->Init(flags)) {
+    if (!instance->Init()) {
         MT_CORE_ERROR("graphics/graphics.cpp: Failed to init graphics system.");
         delete instance;
         instance = nullptr;

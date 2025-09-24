@@ -4,6 +4,8 @@ namespace marathon {
 
 namespace time {
 
+namespace chrono {
+
 TimeSystem::TimeSystem()
     : ITimeSystem("marathon.time.time_system"),
         _start(std::chrono::steady_clock::time_point()),
@@ -30,6 +32,8 @@ double TimeSystem::Time() {
     auto now = std::chrono::steady_clock::now();
     return std::chrono::duration<double>(now - _start).count();
 }
+
+} // namespace chrono
 
 } // namespace time
 
