@@ -31,13 +31,6 @@ private:
     BackendManager& operator=(const BackendManager&) = delete;
 
     bool _valid_impl = false;
-
-    const std::array<int, 4> valid_backends = {
-        GLFW | OPENGL,
-        GLFW | VULKAN,
-        SDL2 | OPENGL,
-        SDL2 | VULKAN
-    };
     std::array<ISystem*, SystemID::SYS_MAX_ENUM> _systems = { nullptr };
 };
 

@@ -2,58 +2,26 @@
 
 // internal
 #include "core/logger.hpp"
-#include "time/chrono/time_system.hpp"
+#include "backend_manager.hpp"
 
 namespace marathon {
 
 namespace time {
 
-namespace {
-    static ITimeSystem* instance = nullptr;
-}
-
 // system interface
 bool Init() {
-    if (instance) {
-        MT_CORE_WARN("time/time.cpp: Cannot init an already initialised system.");
-        return false;
-    }
-
-    instance = new TimeSystem();
-    if (!instance->Init(flags)) {
-        MT_CORE_ERROR("time/time.cpp: Failed to init time system.");
-        delete instance;
-        instance = nullptr;
-        return false;
-    }
-
-    return true;
+    return BackendManager::Instance().GetSystem<ITimeSystem>(SYS_TIME)->Init();
 }
 void Quit() {
-    if (!instance) {
-        MT_CORE_WARN("time/time.cpp: Cannot quit an uninitialised system.");
-        return;
-    }
-
-    instance->Quit();
-    delete instance;
-    instance = nullptr;
+    BackendManager::Instance().GetSystem<ITimeSystem>(SYS_TIME)->Quit();
 }
 
 // time interface
 double Tick() {
-    if (!instance) {
-        MT_CORE_WARN("time/time.cpp: Time system not initialised.");
-        return 0.0;
-    }
-    return instance->Tick();
+    return BackendManager::Instance().GetSystem<ITimeSystem>(SYS_TIME)->Tick();
 }
 double Time() {
-    if (!instance) {
-        MT_CORE_WARN("time/time.cpp: Time system not initialised.");
-        return 0.0;
-    }
-    return instance->Time();
+    return BackendManager::Instance().GetSystem<ITimeSystem>(SYS_TIME)->Time();
 }
 
 } // time

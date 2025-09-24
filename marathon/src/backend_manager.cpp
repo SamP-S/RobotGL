@@ -1,5 +1,8 @@
 #include "backend_manager.hpp"
 
+// std lib
+#include <type_traits>
+
 // internal
 #include "core/logger.hpp"
 #include "graphics/opengl/gl_graphics_system.hpp"
@@ -30,6 +33,7 @@ bool BackendManager::Impl(BackendFlags flags) {
             MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2.");
             _systems[SYS_WINDOW] = new window::sdl2::SDL2WindowSystem();
             _systems[SYS_EVENTS] = new events::sdl2::SDL2EventSystem();
+            break;
         default:
             MT_CORE_ERROR("backend_manager.cpp: Window context backend = INVALID.");
             return false;
@@ -88,7 +92,7 @@ void BackendManager::Quit() {
 template<typename T>
 T* BackendManager::GetSystem(SystemID sys) {
     if (!_systems[sys]) {
-        MT_CORE_ERROR("backend_manager.cpp: no backend imp for system ({})", (int32_t)sys);
+        MT_CORE_ERROR("backend_manager.cpp: no valid impl found for {} system (SYS = {})", typeid(T).name(), (int32_t)sys);
         return nullptr;
     }
     return static_cast<T*>(_systems[sys]);

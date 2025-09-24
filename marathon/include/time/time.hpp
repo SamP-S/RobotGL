@@ -8,7 +8,7 @@ namespace marathon {
 namespace time {
 
 // system interface
-bool Init(BackendFlags flags);
+bool Init();
 void Quit();
 
 // time interface
