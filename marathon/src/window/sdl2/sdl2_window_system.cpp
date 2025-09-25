@@ -39,8 +39,9 @@ bool SDL2WindowSystem::Init() {
 }
 
 void SDL2WindowSystem::Quit() {
-    for (auto& pair : _idTable) {
-        DestroyWindow(pair.first);
+    for (auto it = _idTable.begin(); it != _idTable.end(); ) {
+        DestroyWindow(it->first);
+        it = _idTable.begin();
     }
     _idTable.clear();
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
