@@ -1,5 +1,8 @@
 #pragma once
 
+// std lib
+#include <cstdint>
+
 // internal
 #include "core/i_system.hpp"
 
