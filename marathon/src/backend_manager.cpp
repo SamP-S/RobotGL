@@ -6,10 +6,12 @@
 
 // internal
 #include "core/logger.hpp"
-#include "graphics/opengl/gl_graphics_system.hpp"
-#include "window/sdl2/sdl2_window_system.hpp"
-#include "time/chrono/time_system.hpp"
 #include "events/sdl2/sdl2_event_system.hpp"
+#include "events/imgui_sdl2/imgui_sdl2_event_system.hpp"
+#include "graphics/opengl/gl_graphics_system.hpp"
+#include "time/chrono/time_system.hpp"
+#include "window/sdl2/sdl2_window_system.hpp"
+#include "window/imgui_sdl2/imgui_sdl2_window_system.hpp"
 
 namespace marathon {
 
@@ -31,9 +33,20 @@ bool BackendManager::Impl(BackendFlags flags) {
             return false;
             break;
         case Backends::SDL2:
-            MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2.");
-            _systems[SYS_WINDOW] = new window::sdl2::SDL2WindowSystem();
-            _systems[SYS_EVENTS] = new events::sdl2::SDL2EventSystem();
+            // impl gui
+            switch (flags & Backends::GUI) {
+                case Backends::IMGUI:
+                    MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2 + ImGui.");
+                    _systems[SYS_WINDOW] = new window::imgui_sdl2::ImGuiSDL2WindowSystem();
+                    _systems[SYS_EVENTS] = new events::imgui_sdl2::ImGuiSDL2EventSystem();
+                    break;
+                default:
+                    MT_CORE_INFO("backend_manager.cpp: Window context backend = SDL2.");
+                    _systems[SYS_WINDOW] = new window::sdl2::SDL2WindowSystem();
+                    _systems[SYS_EVENTS] = new events::sdl2::SDL2EventSystem();
+                    break;
+            }
+
             break;
         default:
             MT_CORE_ERROR("backend_manager.cpp: Window context backend = INVALID.");
@@ -55,15 +68,7 @@ bool BackendManager::Impl(BackendFlags flags) {
             return false;
             break;
     }
-    // impl gui
-    switch (flags & Backends::GUI) {
-        case Backends::IMGUI:
-            MT_CORE_WARN("backend_manager.cpp: Gui library = ImGui.");
-            break;
-        default:
-            MT_CORE_WARN("backend_manager.cpp: Gui library = No Gui.");
-            break;
-    }
+
     return true;
 }
 
