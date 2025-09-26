@@ -31,7 +31,7 @@ private:
     bool ConvertKeyboardEvent(const SDL_Event& sdl_e, Event& e);
 };
 
-} // sdl2
+} // imgui sdl2
 
 } // events
 
