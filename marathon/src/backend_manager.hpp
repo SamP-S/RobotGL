@@ -2,6 +2,9 @@
 
 // std lib
 #include <array>
+#include <unordered_map>
+#include <vector>
+
 
 // internal
 #include "core/backends.hpp"
@@ -30,7 +33,8 @@ private:
     BackendManager(const BackendManager&) = delete;
     BackendManager& operator=(const BackendManager&) = delete;
 
-    // bool _valid_impl = false;
+    std::vector<SystemID> GetSysOrder(bool reverse = false);
+
     std::array<ISystem*, SystemID::SYS_MAX_ENUM> _systems = { nullptr };
 };
 

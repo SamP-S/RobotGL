@@ -1,6 +1,7 @@
 #include "backend_manager.hpp"
 
 // std lib
+#include <algorithm>
 #include <type_traits>
 
 // internal
@@ -67,26 +68,22 @@ bool BackendManager::Impl(BackendFlags flags) {
 }
 
 bool BackendManager::Init() {
-    // if (!_valid_impl) {
-    //     MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
-    //     return false;
-    // }
-    GetSystem<time::ITimeSystem>(SYS_TIME)->Init();
-    GetSystem<window::IWindowSystem>(SYS_WINDOW)->Init();
-    GetSystem<events::IEventSystem>(SYS_EVENTS)->Init();
-    GetSystem<graphics::IGraphicsSystem>(SYS_GRAPHICS)->Init();
+    for (SystemID sys : GetSysOrder()) {
+        if (!GetSystem<ISystem>(sys)->Init()) {
+            MT_CORE_CRITICAL("backend_manager.cpp: failed to init {} system (SYS = {})", GetSystem<ISystem>(sys)->GetName(), (int32_t)sys);
+            return false;
+        }
+        MT_CORE_INFO("backend_manager.cpp: successfully inited {} system (SYS = {})", GetSystem<ISystem>(sys)->GetName(), (int32_t)sys);
+    }
     return true;
 }
 
 void BackendManager::Quit() {
-    // if (!_valid_impl) {
-    //     MT_CORE_CRITICAL("backend_manager.cpp: bm can't init, no valid impl call.");
-    //     return;
-    // }
-    GetSystem<graphics::IGraphicsSystem>(SYS_GRAPHICS)->Quit();
-    GetSystem<events::IEventSystem>(SYS_EVENTS)->Quit();
-    GetSystem<window::IWindowSystem>(SYS_WINDOW)->Quit();
-    GetSystem<time::ITimeSystem>(SYS_TIME)->Quit();
+    for (SystemID sys : GetSysOrder(true)) {
+        GetSystem<ISystem>(sys)->Quit();
+        delete _systems[sys];
+        _systems[sys] = nullptr;
+    }
 }
 
 template<typename T>
@@ -98,4 +95,44 @@ T* BackendManager::GetSystem(SystemID sys) {
     return static_cast<T*>(_systems[sys]);
 }
 
+std::vector<SystemID> BackendManager::GetSysOrder(bool reverse) {
+    std::vector<SystemID> base_order;
+    // create list of implemented systems
+    for (int32_t i = 0; i < SystemID::SYS_MAX_ENUM; i++) {
+        if (_systems[i]) {
+            base_order.push_back((SystemID)i);
+        }
+    }
+
+    // build system order based on dependencies
+    std::vector<SystemID> sys_order;
+    std::vector<bool> visited(SystemID::SYS_MAX_ENUM, false);
+    // search through dependencies recursively
+    std::function<void(SystemID)> visit = [&](SystemID sys) {
+        if (visited[sys])
+            return;
+        visited[sys] = true;
+        if (_systems[sys]) {
+            for (SystemID dep : _systems[sys]->GetSystemDeps()) {
+                if (_systems[dep]) {
+                    visit(dep);
+                }
+            }
+        } else {
+            MT_CORE_CRITICAL("backend_manager.cpp: system order generation failed, unimplemented system dependency found (SYS = {})", (int32_t)sys);
+            throw std::runtime_error("Backend Manager failed to generate system order due to unimplemented system dependency.");
+        }
+        sys_order.push_back(sys);
+    };
+
+    for (SystemID sys : base_order) {
+        visit(sys);
+    }
+
+    if (reverse) {
+        std::reverse(sys_order.begin(), sys_order.end());
+    }
+    return sys_order;
 }
+
+} // marathon
