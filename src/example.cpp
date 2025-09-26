@@ -35,6 +35,8 @@ int main() {
                 std::cout << event << std::endl;
             }
         }
+
+        window::BeginFrame(w);
         
         // interactive tick
         double dt = time::Tick();
@@ -49,8 +51,7 @@ int main() {
         );
         graphics::Clear();
         
-        // swap frame shown
-        window::SwapFrame(w);
+        window::EndFrame(w);
     }
 
     // deinit

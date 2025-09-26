@@ -26,7 +26,24 @@ void Quit() {
     instance->Quit();
 }
 
-// renderer
+// frame handling
+void BeginFrame(WindowID win) {
+    auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
+    if (!instance) {
+        return;
+    }
+    instance->BeginFrame(win);
+}
+
+void EndFrame(WindowID windowID) {
+    auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
+    if (!instance) {
+        return;
+    }
+    instance->EndFrame(windowID);
+}
+
+// window factory
 WindowID CreateWindow(const std::string& title, int w, int h) {
     auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
     if (!instance) {
@@ -59,15 +76,23 @@ void* GetNativeWindow(WindowID windowID) {
     return instance->GetNativeWindow(windowID);
 }
 
-void SwapFrame(WindowID windowID) {
+// getter/setters
+std::string GetWindowTitle(WindowID win) {
+    auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
+    if (!instance) {
+        return {};
+    }
+    return instance->GetWindowTitle(win);
+}
+
+void SetWindowTitle(WindowID win, const std::string& title) {
     auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
     if (!instance) {
         return;
     }
-    instance->SwapFrame(windowID);
+    instance->SetWindowTitle(win, title);
 }
 
-// getter/setters
 void SetWindowMinSize(WindowID windowID, int minWidth, int minHeight) {
     auto* instance = BackendManager::Instance().GetSystem<IWindowSystem>(SYS_WINDOW);
     if (!instance) {

@@ -28,11 +28,14 @@ bool Init();
 void Quit();
 
 // window API facade
+void BeginFrame(WindowID win);
+void EndFrame(WindowID win);
 WindowID CreateWindow(const std::string& title, int w, int h);
 void DestroyWindow(WindowID win);
 void* GetRenderContext(WindowID win);
 void* GetNativeWindow(WindowID win);
-void SwapFrame(WindowID win);
+std::string GetWindowTitle(WindowID win);
+void SetWindowTitle(WindowID win, const std::string& title);
 void SetWindowMinSize(WindowID win, int minWidth, int minHeight);
 void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight);
 void SetWindowSize(WindowID win, int width, int height);

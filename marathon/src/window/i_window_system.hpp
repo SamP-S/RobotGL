@@ -20,12 +20,21 @@ public:
     virtual bool Init() = 0;
     virtual void Quit() = 0;
 
-    // window interface
+    // window frame handling
+    virtual void BeginFrame(WindowID win) = 0;
+    virtual void EndFrame(WindowID win) = 0;
+
+    // window factory
     virtual WindowID CreateWindow(const std::string& title, int w, int h) = 0;
     virtual void DestroyWindow(WindowID win) = 0;
+    
+    // native handles
     virtual void* GetRenderContext(WindowID win) = 0;
     virtual void* GetNativeWindow(WindowID win) = 0;
-    virtual void SwapFrame(WindowID win) = 0;
+
+    // window getters/setters
+    virtual std::string GetWindowTitle(WindowID win) = 0;
+    virtual void SetWindowTitle(WindowID win, const std::string& title) = 0;
     virtual void SetWindowMinSize(WindowID win, int minWidth, int minHeight) = 0;
     virtual void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight) = 0;
     virtual void SetWindowSize(WindowID win, int width, int height) = 0;

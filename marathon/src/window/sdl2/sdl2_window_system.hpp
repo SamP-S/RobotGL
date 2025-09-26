@@ -32,11 +32,20 @@ public:
     void Quit() override;
 
     // window interface
+    void BeginFrame(WindowID win) override;
+    void EndFrame(WindowID win) override;
+
+    // window factory
     WindowID CreateWindow(const std::string& title, int w, int h) override;
     void DestroyWindow(WindowID win) override;
+
+    // native handles
     void* GetRenderContext(WindowID win) override;
     void* GetNativeWindow(WindowID win) override;
-    void SwapFrame(WindowID win) override;
+    
+    // window getters/setters
+    std::string GetWindowTitle(WindowID win) override;
+    void SetWindowTitle(WindowID win, const std::string& title) override;
     void SetWindowMinSize(WindowID win, int minWidth, int minHeight) override;
     void GetWindowMinSize(WindowID win, int& minWidth, int& minHeight) override;
     void SetWindowSize(WindowID win, int width, int height) override;

@@ -61,6 +61,18 @@ void SDL2WindowSystem::Quit() {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+// frame handling
+void SDL2WindowSystem::BeginFrame(WindowID win) {}
+
+void SDL2WindowSystem::EndFrame(WindowID win) {
+    SDL_Window* w = FindWindow(win);
+    if (!w) {
+        return;
+    }
+    SDL_GL_SwapWindow(w);
+}
+
+
 WindowID SDL2WindowSystem::CreateWindow(const std::string& title, int w, int h) {
     /// TODO: write renderer dependent code
     /// default to opengl for now
@@ -127,12 +139,21 @@ void* SDL2WindowSystem::GetNativeWindow(WindowID win) {
     return static_cast<void*>(FindWindow(win));
 }
 
-void SDL2WindowSystem::SwapFrame(WindowID win) {
+std::string SDL2WindowSystem::GetWindowTitle(WindowID win) {
+    SDL_Window* w = FindWindow(win);
+    if (!w) {
+        return "";
+    }
+    const char* title = SDL_GetWindowTitle(w);
+    return title ? std::string(title) : "";
+}
+
+void SDL2WindowSystem::SetWindowTitle(WindowID win, const std::string& title) {
     SDL_Window* w = FindWindow(win);
     if (!w) {
         return;
     }
-    SDL_GL_SwapWindow(w);
+    SDL_SetWindowTitle(w, title.c_str());
 }
 
 void SDL2WindowSystem::SetWindowMinSize(WindowID win, int minWidth, int minHeight) {
