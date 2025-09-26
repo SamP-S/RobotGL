@@ -25,6 +25,37 @@ if (NOT EXISTS ${LIBTFD_DIR}/CMakeLists.txt)
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 endif()
 
+# find installed packages
+find_package(OpenGL REQUIRED)
+message(STATUS "OpenGL included at ${OPENGL_INCLUDE_DIRS}")
+message(STATUS "OpenGL libraries are ${OPENGL_LIBRARIES}")
+
+find_package(SDL2 REQUIRED)
+message(STATUS "SDL2 included at ${SDL2_INCLUDE_DIRS}")
+message(STATUS "SDL2 libraries are ${SDL2_LIBRARIES}")
+
+find_package(GLEW REQUIRED)
+message(STATUS "GLEW included at ${GLEW_INCLUDE_DIRS}")
+message(STATUS "GLEW libraries are ${GLEW_LIBRARIES}")
+
+
+# imgui
+add_library(imgui STATIC
+  external/imgui/imgui.cpp
+  external/imgui/imgui_draw.cpp
+  external/imgui/imgui_tables.cpp
+  external/imgui/imgui_widgets.cpp
+  external/imgui/imgui_demo.cpp
+  external/imgui/backends/imgui_impl_sdl2.cpp
+  external/imgui/backends/imgui_impl_opengl3.cpp
+)
+target_include_directories(imgui PUBLIC
+  external/imgui
+)
+target_link_libraries(imgui PUBLIC
+  SDL2::SDL2 OpenGL::GL
+)
+
 # marathon engine
 set(MTN_PUBLIC_INCLUDE_DIRS  "marathon/include")
 set(MTN_PRIVATE_INCLUDE_DIRS "marathon/src")
@@ -39,23 +70,17 @@ add_subdirectory("external/la")
 add_subdirectory("external/spdlog")
 add_subdirectory("external/json")
 
-find_package(OpenGL REQUIRED)
 target_include_directories(marathon PRIVATE ${OPENGL_INCLUDE_DIRS})
 target_link_libraries(marathon PRIVATE ${OPENGL_LIBRARIES})
-message(STATUS "OpenGL included at ${OPENGL_INCLUDE_DIRS}")
-message(STATUS "OpenGL libraries are ${OPENGL_LIBRARIES}")
 
-find_package(SDL2 REQUIRED)
 target_include_directories(marathon PRIVATE ${SDL2_INCLUDE_DIRS})
 target_link_libraries(marathon PRIVATE ${SDL2_LIBRARIES})
-message(STATUS "SDL2 included at ${SDL2_INCLUDE_DIRS}")
-message(STATUS "SDL2 libraries are ${SDL2_LIBRARIES}")
 
-find_package(GLEW REQUIRED)
 target_include_directories(marathon PRIVATE ${GLEW_INCLUDE_DIRS})
 target_link_libraries(marathon PRIVATE ${GLEW_LIBRARIES})
-message(STATUS "GLEW included at ${GLEW_INCLUDE_DIRS}")
-message(STATUS "GLEW libraries are ${GLEW_LIBRARIES}")
+
+target_include_directories(marathon PUBLIC imgui)
+target_link_libraries(marathon PUBLIC imgui)
 
 target_link_libraries(marathon PUBLIC la)
 target_link_libraries(marathon PUBLIC spdlog)

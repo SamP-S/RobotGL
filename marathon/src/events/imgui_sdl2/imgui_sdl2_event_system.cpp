@@ -5,6 +5,7 @@
 #include "SDL2/SDL_events.h"
 #include "SDL2/SDL.h"
 #include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
 
 // internal
 #include "core/logger.hpp"
