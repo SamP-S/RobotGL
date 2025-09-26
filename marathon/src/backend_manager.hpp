@@ -7,6 +7,7 @@
 
 
 // internal
+#include "core/logger.hpp"
 #include "core/backends.hpp"
 #include "events/i_event_system.hpp"
 #include "graphics/i_graphics_system.hpp"
@@ -23,8 +24,15 @@ public:
     bool Init();
     void Quit();
     
+    // template methods must be defined in header
     template<typename T>
-    T* GetSystem(SystemID sys);
+    T* GetSystem(SystemID sys) {
+        if (!_systems[sys]) {
+            MT_CORE_CRITICAL("backend_manager.cpp: no valid impl found for {} system (SYS = {})", typeid(T).name(), (int32_t)sys);
+            throw std::runtime_error("Backend Manager has no valid implementation found for requested system.");
+        }
+        return static_cast<T*>(_systems[sys]);
+    }
 
 private:
     BackendManager() = default;

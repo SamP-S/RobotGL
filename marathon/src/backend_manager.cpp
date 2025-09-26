@@ -69,30 +69,21 @@ bool BackendManager::Impl(BackendFlags flags) {
 
 bool BackendManager::Init() {
     for (SystemID sys : GetSysOrder()) {
-        if (!GetSystem<ISystem>(sys)->Init()) {
-            MT_CORE_CRITICAL("backend_manager.cpp: failed to init {} system (SYS = {})", GetSystem<ISystem>(sys)->GetName(), (int32_t)sys);
+        if (!_systems[sys]->Init()) {
+            MT_CORE_CRITICAL("backend_manager.cpp: failed to init {} system (SYS = {})", _systems[sys]->GetName(), (int32_t)sys);
             return false;
         }
-        MT_CORE_INFO("backend_manager.cpp: successfully inited {} system (SYS = {})", GetSystem<ISystem>(sys)->GetName(), (int32_t)sys);
+        MT_CORE_INFO("backend_manager.cpp: successfully inited {} system (SYS = {})", _systems[sys]->GetName(), (int32_t)sys);
     }
     return true;
 }
 
 void BackendManager::Quit() {
     for (SystemID sys : GetSysOrder(true)) {
-        GetSystem<ISystem>(sys)->Quit();
+        _systems[sys]->Quit();
         delete _systems[sys];
         _systems[sys] = nullptr;
     }
-}
-
-template<typename T>
-T* BackendManager::GetSystem(SystemID sys) {
-    if (!_systems[sys]) {
-        MT_CORE_CRITICAL("backend_manager.cpp: no valid impl found for {} system (SYS = {})", typeid(T).name(), (int32_t)sys);
-        throw std::runtime_error("Backend Manager has no valid implementation found for requested system.");
-    }
-    return static_cast<T*>(_systems[sys]);
 }
 
 std::vector<SystemID> BackendManager::GetSysOrder(bool reverse) {
