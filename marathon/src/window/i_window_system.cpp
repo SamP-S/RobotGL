@@ -5,8 +5,8 @@ namespace marathon {
 namespace window {
 
 IWindowSystem::IWindowSystem(const std::string& name)
-    : ISystem(SystemID::SYS_WINDOW, name) {}
+    : ISystem(SYS_WINDOW, {}, name) {}
 
-} // namespace events
+} // namespace window
 
 } // namespace marathon

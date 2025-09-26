@@ -5,8 +5,8 @@ namespace marathon {
 namespace time {
 
 ITimeSystem::ITimeSystem(const std::string& name)
-    : ISystem(SystemID::SYS_TIME, name) {}
+    : ISystem(SYS_TIME, {}, name) {}
 
-} // namespace events
+} // namespace time
 
 } // namespace marathon
