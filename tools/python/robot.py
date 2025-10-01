@@ -66,82 +66,35 @@ def drawOrigin():
         glVertex3fv((0, 0, 0))
         glVertex3fv(axis)
     glEnd()
-
-def testRobot():
-    q1 = 1 + 1 * sin(pg.time.get_ticks() / 1000)
-    q2 = -45 + 90 * sin(pg.time.get_ticks() / 1000)
     
-    drawOrigin()
-    applyDH(2, 0, 0, q2)
-    drawOrigin()
-    applyDH(2, 90, 2, q2)
-    drawOrigin()
+def sampleRobot(q):
+    q1, q2 = q
+    l0 = [2, q1, 0, 0]
+    l1 = [2, q2, 0, 0]
+    return [l0, l1]
 
 def scaraRobot(q):
     q0, q1, q2, q3 = q
-    
-    # static link
-    L0_LINK_OFFSET = 2.0    # d
-    L0_JOINT_ANGLE = 0.0    # theta
-    L0_LINK_LENGTH = 0.0    # a
-    L0_LINK_TWIST = 0.0    # alpha
-    # rotational
-    L1_LINK_OFFSET = 0.0    # d
-    L1_JOINT_ANGLE = q[0]    # theta
-    L1_LINK_LENGTH = 1.0    # a
-    L1_LINK_TWIST = 0.0    # alpha
-    # rotational
-    L2_LINK_OFFSET = 0.0    # d
-    L2_JOINT_ANGLE = q[1]    # theta
-    L2_LINK_LENGTH = 1.0    # a
-    L2_LINK_TWIST = 0.0    # alpha
-    # rotational
-    L3_LINK_OFFSET = -0.5    # d
-    L3_JOINT_ANGLE = q[2]    # theta
-    L3_LINK_LENGTH = 0.0    # a
-    L3_LINK_TWIST = 180.0    # alpha
-    # prismatic
-    L4_LINK_OFFSET = q[3]    # d
-    L4_JOINT_ANGLE = 0.0    # theta
-    L4_LINK_LENGTH = 0.0    # a
-    L4_LINK_TWIST = 0.0    # alpha
-    
+    # [d, theta, a, alpha]
+    # [link offset, joint angle, link length, link twist]
+    l0 = [2.0, q[0], 1.0, 0.0]
+    l1 = [0.0, q[1], 1.0, 0.0]
+    l2 = [-0.5, q[2], 0.0, 180.0]
+    l3 = [q[3], 0.0, 0.0, 0.0]
+    return [l0, l1, l2, l3]
+
+def testRobot(robot):
     drawOrigin()
-    applyDH(
-        L0_LINK_OFFSET,
-        L0_JOINT_ANGLE,
-        L0_LINK_LENGTH,
-        L0_LINK_TWIST
-    )
-    drawOrigin()
-    applyDH(
-        L1_LINK_OFFSET,
-        L1_JOINT_ANGLE,
-        L1_LINK_LENGTH,
-        L1_LINK_TWIST
-    )
-    drawOrigin()
-    applyDH(
-        L2_LINK_OFFSET,
-        L2_JOINT_ANGLE,
-        L2_LINK_LENGTH,
-        L2_LINK_TWIST
-    )
-    drawOrigin()
-    applyDH(
-        L3_LINK_OFFSET,
-        L3_JOINT_ANGLE,
-        L3_LINK_LENGTH,
-        L3_LINK_TWIST
-    )
-    drawOrigin()
-    applyDH(
-        L4_LINK_OFFSET,
-        L4_JOINT_ANGLE,
-        L4_LINK_LENGTH,
-        L4_LINK_TWIST
-    )
-    drawOrigin()
+    for link in robot:
+        d, theta, a, alpha = link
+        applyDH(d, theta, a, alpha)
+        drawOrigin()
+
+def forward(q):
+    pass
+
+def inverse(pos):
+    pass
     
 def main():
     print("pyrobot")
@@ -154,16 +107,18 @@ def main():
         
         glRotatef(-90, 1, 0, 0)
         q3 = 1 + 0.5 * sin(pg.time.get_ticks() / 1000)
+        qx = -30 +15 * cos(pg.time.get_ticks() / 1000)
 
         # testRobot()
         q = [
-            -30.0,
-            -30.0,
-            -30.0,
+            qx,
+            qx,
+            qx,
             q3
         ]
-        scaraRobot(q)
-        # drawOrigin()
+        
+        r = scaraRobot(q)
+        testRobot(r)
         
         glPopMatrix()
         pg.display.flip()
