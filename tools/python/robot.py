@@ -31,6 +31,39 @@ def handleEvents():
         if event.type == pg.QUIT:
             pg.quit()
             quit()
+            
+def dhMatrix(d, theta, a, alpha):
+    theta = radians(theta)
+    alpha = radians(alpha)
+    return [
+        [cos(theta), -sin(theta)*cos(alpha), sin(theta)*sin(alpha), a*cos(theta)],
+        [sin(theta), cos(theta)*cos(alpha), -cos(theta)*sin(alpha), a*sin(theta)],
+        [0, sin(alpha), cos(alpha), d],
+        [0, 0, 0, 1]
+    ]
+    
+def identityMatrix():
+    return [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+    ]
+
+def mulMatrix(m1, m2):
+    # assume row major matrices
+    m1_m, m1_n = len(m1), len(m1[0])
+    m2_m, m2_n = len(m2), len(m2[0])
+    if m1_n != m2_m:
+        raise ValueError("Cannot multiply matrices: dimensions do not match")
+
+    # perform multiplication
+    result = [[0 for _ in range(m2_n)] for _ in range(m1_m)]
+    for i in range(m1_m):
+        for j in range(m2_n):
+            for k in range(m1_n):
+                result[i][j] += m1[i][k] * m2[k][j]
+    return result
 
 # d: link offset    (prismatic)
 # theta: joint angle    (theta)
@@ -90,9 +123,18 @@ def testRobot(robot):
         applyDH(d, theta, a, alpha)
         drawOrigin()
 
-def forward(q):
-    pass
-
+# forward kinematics
+def forward(r):
+    pos = [[0], [0], [0], [1]]
+    T = identityMatrix()
+    for link in r:
+        d, theta, a, alpha = link
+        A = dhMatrix(d, theta, a, alpha)
+        T = mulMatrix(T, A)
+    end = mulMatrix(T, pos)
+    # Format output to .2f
+    print(f"End effector position: {[[f'{v[0]:.2f}' for v in end]]}")
+    
 def inverse(pos):
     pass
     
@@ -107,18 +149,22 @@ def main():
         
         glRotatef(-90, 1, 0, 0)
         q3 = 1 + 0.5 * sin(pg.time.get_ticks() / 1000)
-        qx = -30 +15 * cos(pg.time.get_ticks() / 1000)
+        # qx = -30 +15 * cos(pg.time.get_ticks() / 1000)
+        qx = -45 + 45 * cos(pg.time.get_ticks() / 1000)
 
         # testRobot()
         q = [
             qx,
             qx,
             qx,
-            q3
+            1.5
         ]
         
         r = scaraRobot(q)
+        
+        # tests
         testRobot(r)
+        forward(r)
         
         glPopMatrix()
         pg.display.flip()
