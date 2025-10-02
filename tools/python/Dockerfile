@@ -6,21 +6,32 @@ WORKDIR /app
 
 # install apt dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    cmake gdb pkg-config \
-    mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev llvm \
-    libglew-dev libsdl2-dev \ 
+    tar gzip unzip wget git \
+    build-essential cmake gdb pkg-config libffi-dev libssl-dev \
+    x11-apps \
+    mesa-utils freeglut3-dev mesa-common-dev llvm \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \
+    libglew-dev \
+    libsdl2-dev \
+    libsdl2-image-dev \
+    libsdl2-mixer-dev \
+    libsdl2-ttf-dev \
+    libportaudio2 \
+    libpulse0 \
+    libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
 # copy code into working directory
 COPY . .
 
 # install python dependencies
-RUN pip install --upgrade pip \
- && pip install -r ./requirements.txt
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install -r ./requirements.txt
 
 # dev environment variables
-ENV DISPLAY="host.docker.internal:0"
+ENV DISPLAY=":0"
+ENV XDG_RUNTIME_DIR="/tmp/runtime-root"
 
 # run app
 CMD ["python", "robot.py"]

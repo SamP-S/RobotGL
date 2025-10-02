@@ -19,6 +19,19 @@ Run executable:
 ./build/robot
 ```
 
+## Tools
+Install X11 deps and setup for docker:
+``` bash
+sudo apt update
+sudo apt install x11-xserver-utils
+```
+Build and run docker container:
+``` bash
+cd ./tools/python
+docker build -t robotgl_python .
+docker run --rm -it robotgl_python
+```
+
 ## Documeents:
 - Do the [Northwestern Modern Robotics Course](https://modernrobotics.northwestern.edu/nu-gm-book-resource/introduction-autoplay/#department)
 - Inverse Kinematics [Clemson material](https://opentextbooks.clemson.edu/wangrobotics/chapter/inverse-kinematics/)

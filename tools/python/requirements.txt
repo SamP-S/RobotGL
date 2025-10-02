@@ -1,3 +1,5 @@
+numpy
 pygame
-PyOpenGL
-PyOpenGL_accelerate
+pyopengl
+pyopengl_accelerate
+roboticstoolbox-python
