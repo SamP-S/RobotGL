@@ -87,11 +87,12 @@ def dhMatrix(d, theta, a, alpha):
 def sampleRobot():
     robot = rtb.DHRobot(
         links=[
-            rtb.robot.DHLink.RevoluteDH(d=2, theta=30, a=0, alpha=0),
-            rtb.robot.DHLink.RevoluteDH(d=0, theta=30, a=2, alpha=0)
+            rtb.robot.RevoluteDH(d=2, a=0, alpha=0),
+            rtb.robot.RevoluteDH(d=0, a=2, alpha=0)
         ],
         name="Sample 2R Robot"
     )
+    robot.q = [30, 30]
     return robot
 
 def scaraRobot():
@@ -112,9 +113,13 @@ def main():
     frame = 0
     
     scara = scaraRobot()
-    sample = sampleRobot()
-
+    Te = scara.fkine(scara.q)
+    print(f"SCARA FKINE:\n{Te}")
     print(f"SCARA:\n{scara}")
+    
+    sample = sampleRobot()
+    Te = sample.fkine(sample.q)
+    print(f"SAMPLE FKINE:\n{Te}")
     print(f"SAMPLE:\n{sample}")
 
     while True:
@@ -132,7 +137,6 @@ def main():
         ]
         
         # tests
-        Te = r.fkine(r.qr)
         # testRobot(r)
         # forward(r)
         
