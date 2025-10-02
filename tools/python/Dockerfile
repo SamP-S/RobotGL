@@ -23,15 +23,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # copy code into working directory
-COPY . .
+COPY requirements.txt .
 
 # install python dependencies
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install -r ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # dev environment variables
 ENV DISPLAY=":0"
 ENV XDG_RUNTIME_DIR="/tmp/runtime-root"
 
-# # run app
-# CMD ["python", "robot.py"]
+# run app
+CMD ["bash"]
+
+# CMD ["python", "kinematics.py"]
+# 
