@@ -33,5 +33,5 @@ RUN pip install -r ./requirements.txt
 ENV DISPLAY=":0"
 ENV XDG_RUNTIME_DIR="/tmp/runtime-root"
 
-# run app
-CMD ["python", "robot.py"]
+# # run app
+# CMD ["python", "robot.py"]

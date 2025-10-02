@@ -29,7 +29,8 @@ Build and run docker container:
 ``` bash
 cd ./tools/python
 docker build -t robotgl_python .
-docker run --rm -it robotgl_python
+docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix robotgl_python bash
+python \<script.py\>
 ```
 
 ## Documeents:
