@@ -5,6 +5,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 from math import *
+import numpy as np
 
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 360
@@ -32,39 +33,6 @@ def handleEvents():
             pg.quit()
             quit()
             
-def dhMatrix(d, theta, a, alpha):
-    theta = radians(theta)
-    alpha = radians(alpha)
-    return [
-        [cos(theta), -sin(theta)*cos(alpha), sin(theta)*sin(alpha), a*cos(theta)],
-        [sin(theta), cos(theta)*cos(alpha), -cos(theta)*sin(alpha), a*sin(theta)],
-        [0, sin(alpha), cos(alpha), d],
-        [0, 0, 0, 1]
-    ]
-    
-def identityMatrix():
-    return [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1]
-    ]
-
-def mulMatrix(m1, m2):
-    # assume row major matrices
-    m1_m, m1_n = len(m1), len(m1[0])
-    m2_m, m2_n = len(m2), len(m2[0])
-    if m1_n != m2_m:
-        raise ValueError("Cannot multiply matrices: dimensions do not match")
-
-    # perform multiplication
-    result = [[0 for _ in range(m2_n)] for _ in range(m1_m)]
-    for i in range(m1_m):
-        for j in range(m2_n):
-            for k in range(m1_n):
-                result[i][j] += m1[i][k] * m2[k][j]
-    return result
-
 # d: link offset    (prismatic)
 # theta: joint angle    (theta)
 # a: link length       
@@ -100,20 +68,22 @@ def drawOrigin():
         glVertex3fv(axis)
     glEnd()
     
+### ROBOTS ###
+    
 def sampleRobot(q):
     q1, q2 = q
-    l0 = [2, q1, 0, 0]
-    l1 = [2, q2, 0, 0]
+    l0 = np.array([2, q1, 0, 0], dtype=float)
+    l1 = np.array([2, q2, 0, 0], dtype=float)
     return [l0, l1]
 
 def scaraRobot(q):
     q0, q1, q2, q3 = q
     # [d, theta, a, alpha]
     # [link offset, joint angle, link length, link twist]
-    l0 = [2.0, q[0], 1.0, 0.0]
-    l1 = [0.0, q[1], 1.0, 0.0]
-    l2 = [-0.5, q[2], 0.0, 180.0]
-    l3 = [q[3], 0.0, 0.0, 0.0]
+    l0 = np.array([2.0, q0, 1.0, 0.0], dtype=float)
+    l1 = np.array([0.0, q1, 1.0, 0.0], dtype=float)
+    l2 = np.array([-0.5, q2, 0.0, 180.0], dtype=float)
+    l3 = np.array([q3, 0.0, 0.0, 0.0], dtype=float)
     return [l0, l1, l2, l3]
 
 def testRobot(robot):
@@ -123,20 +93,38 @@ def testRobot(robot):
         applyDH(d, theta, a, alpha)
         drawOrigin()
 
+def dhMatrix(d, theta, a, alpha):
+    theta = np.radians(theta)
+    alpha = np.radians(alpha)
+    return np.array([
+        [np.cos(theta), -np.sin(theta)*np.cos(alpha), np.sin(theta)*np.sin(alpha), a*np.cos(theta)],
+        [np.sin(theta), np.cos(theta)*np.cos(alpha), -np.cos(theta)*np.sin(alpha), a*np.sin(theta)],
+        [0, np.sin(alpha), np.cos(alpha), d],
+        [0, 0, 0, 1]
+    ], dtype=float)
+
 # forward kinematics
 def forward(r):
-    pos = [[0], [0], [0], [1]]
-    T = identityMatrix()
+    # initial position
+    pos = np.zeros((4, 1))
+    pos[3, 0] = 1
+    # iteratively compute transformation matrix
+    T = np.eye(4)
     for link in r:
         d, theta, a, alpha = link
         A = dhMatrix(d, theta, a, alpha)
-        T = mulMatrix(T, A)
-    end = mulMatrix(T, pos)
+        T = np.matmul(T, A)
+    end = np.matmul(T, pos)
     # Format output to .2f
     print(f"End effector position: {[[f'{v[0]:.2f}' for v in end]]}")
+    return end
+
+# inverse kinematics (newton-raphson)
+def inverse(r0, q0, target, max_iter=1000, tol=1e-3):
+    # Xn1 = Xn0 - f(Xn0) / f'(Xn0)
+    for i in range(max_iter):
+        pass
     
-def inverse(pos):
-    pass
     
 def main():
     print("pyrobot")
