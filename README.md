@@ -19,5 +19,10 @@ Run executable:
 ./build/robot
 ```
 
+## Documeents:
+- Do the [Northwestern Modern Robotics Course](https://modernrobotics.northwestern.edu/nu-gm-book-resource/introduction-autoplay/#department)
+- Inverse Kinematics [Clemson material](https://opentextbooks.clemson.edu/wangrobotics/chapter/inverse-kinematics/)
+- Look into [CoppeliaSim](https://uark-meeg-intro-robo.readthedocs.io/en/latest/coppelia.html).
+
 ## License
 This project is licensed under the [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0).
