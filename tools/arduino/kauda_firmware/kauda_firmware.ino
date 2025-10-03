@@ -89,20 +89,84 @@ public:
 class ServoMotor : public IMotor {
 private:
     Servo _servo;
+    int _pin;
+    float _angle;
+    float _homeAngle;
+
 public:
-    /*
-    attach(pin)	Attaches the servo to a PWM pin
-    attach(pin, min, max)	(Optional) Sets custom pulse widths (default: 544 to 2400 µs)
-    write(angle)	Moves servo to angle (0 to 180)
-    writeMicroseconds(us)	Sends a specific pulse width in microseconds
-    read()	Returns the last written angle
-    attached()	Returns true if servo is attached
-    detach()	Stops sending PWM signal (servo will stop holding position)
-    */
+    ServoMotor(int pin, float homeAngle = 90.0f) : _pin(pin), _angle(homeAngle), _homeAngle(homeAngle) {
+        _servo.attach(_pin);
+        _servo.write(_angle);
+    }
+
+    // angle
+    void Set(float value) override {
+        _angle = constrain(value, 0.0f, 180.0f);
+        _servo.write(_angle);
+    }
+
+    float Get() override {
+        return _angle;
+    }
+
+    // operations
+    void Home() override {
+        Set(_homeAngle);
+    }
+
+    void Reset() override {
+        Home();
+    }
+
+    void ReadStatus(char* str) override {
+        sprintf(str, "Servo on pin %d angle: %.2f", _pin, _angle);
+    }
 };
 
 class StepperMotor : public IMotor {
+private:
+    AccelStepper _stepper;
+    int _stepPin, _dirPin;
+    float _angle;
+    float _homeAngle;
+    float _stepsPerDegree;
 
+public:
+    StepperMotor(int stepPin, int dirPin, float homeAngle = 0.0f, float stepsPerDegree = 1.0f)
+        : _stepPin(stepPin), _dirPin(dirPin), _angle(homeAngle), _homeAngle(homeAngle), _stepsPerDegree(stepsPerDegree),
+            _stepper(AccelStepper::DRIVER, stepPin, dirPin) {
+        _stepper.setMaxSpeed(1000);
+        _stepper.setAcceleration(500);
+        Set(_homeAngle);
+    }
+
+    // angle
+    void Set(float value) override {
+        float targetAngle = constrain(value, 0.0f, 180.0f);
+        long targetSteps = targetAngle * _stepsPerDegree;
+        _stepper.moveTo(targetSteps);
+        while (_stepper.distanceToGo() != 0) {
+            _stepper.run();
+        }
+        _angle = targetAngle;
+    }
+
+    float Get() override {
+        return _angle;
+    }
+
+    // operations
+    void Home() override {
+        Set(_homeAngle);
+    }
+
+    void Reset() override {
+        Home();
+    }
+
+    void ReadStatus(char* str) override {
+        sprintf(str, "Stepper on pins %d/%d angle: %.2f", _stepPin, _dirPin, _angle);
+    }
 };
 
 
