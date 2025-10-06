@@ -134,6 +134,57 @@ public:
     }
 };
 
+class DualStepperAxis : public IAxis {
+private:
+    int _stepAPin;
+    int _dirAPin;
+    int _stepBPin;
+    int _dirBPin;
+    float _minAngle;
+    float _maxAngle;
+    float _gearRatio;
+    AccelStepper _stepperA;
+    AccelStepper _stepperB;
+
+public:
+    DualStepperAxis(int stepAPin, int dirAPin, int stepBPin, int dirBPin, float minAngle, float maxAngle, float gearRatio = 1.0f)
+        : _stepAPin(stepAPin), _dirAPin(dirAPin), _stepBPin(stepBPin), _dirBPin(dirBPin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
+          _stepperA(STEPPER_INTERFACE, stepAPin, dirAPin), _stepperB(STEPPER_INTERFACE, stepBPin, dirBPin) {
+        _stepperA.setMaxSpeed(STEPPER_MAX_SPEED);
+        _stepperA.setAcceleration(STEPPER_ACCELERATION);
+        _stepperB.setMaxSpeed(STEPPER_MAX_SPEED);
+        _stepperB.setAcceleration(STEPPER_ACCELERATION);
+    }
+
+    void attach() override {
+        // No specific attach needed for stepper
+    }
+
+    void detach() override {
+        // No specific detach needed for stepper
+    }
+
+    void Set(float target) override {
+        float targetAngle = constrain(target, _minAngle, _maxAngle);
+        int targetSteps = targetAngle / STEPPER_STEP_ANGLE;
+        _stepperA.moveTo(targetSteps);
+        _stepperB.moveTo(targetSteps);
+    }
+    
+    float Get() override {
+        return _stepperA.currentPosition() * STEPPER_STEP_ANGLE;
+    }
+
+    void Poll() {
+        if (_stepperA.distanceToGo() != 0) {
+            _stepperA.run();
+        }
+        if (_stepperB.distanceToGo() != 0) {
+            _stepperB.run();
+        }
+    }
+};
+
 class ServoAxis : public IAxis {
 private:
     Servo _servo;
@@ -166,7 +217,7 @@ public:
     }
 };
 
-#define AXIS_COUNT 4
+#define AXIS_COUNT 3
 #define AXIS_HOME_ANGLE 0.0f
 
 IAxis** axes = new IAxis*[AXIS_COUNT];
@@ -202,10 +253,9 @@ void setup() {
     pinMode(spinDirPin, OUTPUT);    // Spindle Direction
 
     // initialize axes
-    axes[0] = new StepperAxis(stepXPin, dirXPin, 0.0f, 180.0f);
-    axes[1] = new StepperAxis(stepYPin, dirYPin, 15.0f, 165.0f);
-    axes[2] = new StepperAxis(stepZPin, dirZPin, 0.0f, 180.0f);
-    axes[3] = new ServoAxis(9, 0.0f, 180.0f);
+    axes[0] = new DualStepperAxis(stepXPin, dirXPin, stepYPin, dirYPin, 0.0f, 180.0f);
+    axes[1] = new StepperAxis(stepZPin, dirZPin, 0.0f, 180.0f);
+    axes[2] = new StepperAxis(stepAPin, dirAPin, 0.0f, 180.0f);
 }
 
 void setAxis(String* args, int argCount) {
