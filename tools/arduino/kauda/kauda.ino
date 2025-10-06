@@ -252,10 +252,13 @@ void setup() {
     pinMode(spinEnPin, OUTPUT);     // Spindle Enable
     pinMode(spinDirPin, OUTPUT);    // Spindle Direction
 
-    // initialize axes
-    axes[0] = new DualStepperAxis(stepXPin, dirXPin, stepYPin, dirYPin, 0.0f, 180.0f);
-    axes[1] = new StepperAxis(stepZPin, dirZPin, 0.0f, 180.0f);
-    axes[2] = new StepperAxis(stepAPin, dirAPin, 0.0f, 180.0f);
+    digitalWrite(enPin, LOW); // Enable motors
+    // init test motor
+    axes[0] = new StepperAxis(stepXPin, dirXPin, 0.0f, 180.0f);
+    // // init arm
+    // axes[0] = new DualStepperAxis(stepXPin, dirXPin, stepYPin, dirYPin, 0.0f, 180.0f);
+    // axes[1] = new StepperAxis(stepZPin, dirZPin, 0.0f, 180.0f);
+    // axes[2] = new StepperAxis(stepAPin, dirAPin, 0.0f, 180.0f);
 }
 
 void setAxis(String* args, int argCount) {
