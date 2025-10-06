@@ -168,7 +168,7 @@ public:
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         int targetSteps = targetAngle / STEPPER_STEP_ANGLE;
         _stepperA.moveTo(targetSteps);
-        _stepperB.moveTo(targetSteps);
+        _stepperB.moveTo(-targetSteps);
     }
     
     float Get() override {
