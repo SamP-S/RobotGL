@@ -27,9 +27,6 @@
 #include <AccelStepper.h>
 #include <Arduino.h>
 
-// internal
-#include "kauda_robot.h"
-
 // motor pins
 const int enPin = 8;
 const int stepXPin = 2;     // X.STEP
@@ -102,11 +99,10 @@ private:
 
 public:
     StepperAxis(int stepPin, int dirPin, float minAngle, float maxAngle, float gearRatio = 1.0f)
-        : _stepPin(stepPin), _dirPin(dirPin), _minAngle(minAngle), _maxAngle(maxAngle), _angle(0.0f),
+        : _stepPin(stepPin), _dirPin(dirPin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
             _stepper(STEPPER_INTERFACE, stepPin, dirPin) {
         _stepper.setMaxSpeed(STEPPER_MAX_SPEED);
         _stepper.setAcceleration(STEPPER_ACCELERATION);
-        attach();
     }
 
     void attach() override {
@@ -195,16 +191,17 @@ private:
 
 public:
     ServoAxis(int pin, float minAngle, float maxAngle, float gearRatio = 1.0f)
-        : _pin(pin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio) {
-            _servo()
+        : _pin(pin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
+          _servo(Servo()) {
+            _servo.attach(_pin);
     }
 
     void attach() override {
-        _servo.attach(_pin);
+
     }   
 
     void detach() override {
-        _servo.detach();
+
     }
 
     void Set(float target) override {
@@ -219,11 +216,7 @@ public:
 
 #define AXIS_COUNT 3
 #define AXIS_HOME_ANGLE 0.0f
-
 IAxis** axes = new IAxis*[AXIS_COUNT];
-String inputBuffer = "";
-bool cmdReading = false;
-bool cmdFinished = false;
 
 void setup() {
     Serial.begin(115200);
@@ -327,7 +320,7 @@ void (*funcs[COMMAND::CMD_MAX_ENUM])(String* args, int argCount) = {
     home, // CMD_HOME
     nullptr, // CMD_RESET
     nullptr, // CMD_STATUS
-}
+};
 
 void processCommand(const String& cmd) {
     // parse command
@@ -343,18 +336,18 @@ void processCommand(const String& cmd) {
     }
 
     // map command to enum
-    int cmd = args[0].toInt();
-    if (cmd < 0 || cmd >= COMMAND::CMD_MAX_ENUM) {
+    int cmdID = args[0].toInt();
+    if (cmdID < 0 || cmdID >= COMMAND::CMD_MAX_ENUM) {
         Serial.println("Invalid command index");
         return;
-    } else if (cmd == CMD_UNKNOWN) {
+    } else if (cmdID == CMD_UNKNOWN) {
         Serial.println("Unknown command");
         return;
     }
 
     // execute command
-    if (funcs[cmd] != nullptr) {
-        funcs[cmd](args, argCount);
+    if (funcs[cmdID] != nullptr) {
+        funcs[cmdID](args, argCount);
     } else {
         Serial.println("Command not implemented");
     }
@@ -364,6 +357,10 @@ void processCommand(const String& cmd) {
 }
 
 void loop() {
+    String inputBuffer = "";
+    bool cmdReading = false;
+    bool cmdFinished = false;
+
     // read serial
     while (Serial.available() && !cmdFinished) {
         char c = Serial.read();
@@ -395,5 +392,5 @@ void loop() {
     }
 
     // allow serial to catch up
-    delay(5);
+    delay(50);
 }
