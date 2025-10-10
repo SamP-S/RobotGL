@@ -59,6 +59,7 @@ class IAxis {
 public:
     virtual void enable() = 0;
     virtual void disable() = 0;
+    virtual void reset() = 0;
     virtual void set(float target) = 0;
     virtual float get() = 0;
     virtual void poll() = 0;
@@ -100,6 +101,10 @@ public:
 
     void disable() override {
         digitalWrite(enPin, HIGH);
+    }
+
+    void reset() override {
+        _stepper.setCurrentPosition(0);
     }
 
     void set(float target) override {
@@ -151,6 +156,11 @@ public:
         digitalWrite(enBPin, HIGH);
     }
 
+    void reset() override {
+        _stepperA.setCurrentPosition(0);
+        _stepperB.setCurrentPosition(0);
+    }
+
     void set(float target) override {
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         int targetSteps = targetAngle / STEPPER_STEP_ANGLE;
@@ -193,6 +203,10 @@ public:
         _servo.detach();
     }
 
+    void reset() override {
+        // nothing required
+    }
+
     void set(float target) override {
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         _servo.write(targetAngle);
@@ -201,46 +215,11 @@ public:
     float get() override {
         return _servo.read();
     }
-};
 
-class Robot {
-public:
-    Robot() {
-
+    void poll() override {
+        // nothing required
     }
-
-    // set
-    void enable();
-    void disable();
-
-    // pose control
-    void setPose(float* angles, int axisCount);
-    void getPose(float* angles, int axisCount);
-    void setAxis(int axisID, float angle);
-    void getAxis(int axisID, float* angle);
-
-    // predefined movement
-    void home();
-
-    CMD_ENABLE,
-    CMD_DISABLE,
-    CMD_SET,
-    CMD_GET,
-    // motor
-    CMD_SET_AXIS,
-    CMD_GET_AXIS,
-    // movement
-    CMD_STOP,
-    CMD_PAUSE,
-    CMD_RESUME,
-    // operation
-    CMD_HOME,
-    CMD_RESET,
-    CMD_STATUS,
-    
-
 };
-
 
 // ====================
 // = COMMANDS OPERATIONS
@@ -269,10 +248,10 @@ void disable(String* args, int argCount) {
     }
 }
 
-void set(String* args, int argCount) {
+void setPose(String* args, int argCount) {
     if (argCount != axisCount + 1) {
-        Serial.print("SET requires "); 
-        Serial.print(AXIS_COUNT); 
+        Serial.print("SET_POSE requires "); 
+        Serial.print(axisCount); 
         Serial.println(" arguments: <angle>..."); 
         return;
     }
@@ -286,9 +265,9 @@ void set(String* args, int argCount) {
     }
 }
 
-void get(String* args, int argCount) {
+void getPose(String* args, int argCount) {
     if (argCount != 1) {
-        Serial.print("GET requires 0 arguments.");
+        Serial.print("GET_POSE requires 0 arguments.");
         return;
     }
     for (int i = 0; i < axisCount; i++) {
@@ -339,6 +318,11 @@ void home(String* args, int argCount) {
         axes[i].set(0.0f);
 }
 
+void reset(String* args, int argCount) {
+    for (int i = 0; i < axisCount; i++)
+        axes[i].reset();
+}
+
 // ====================
 // = SERIAL COMMANDS
 // ====================
@@ -347,8 +331,8 @@ enum COMMAND : int {
     // robot
     CMD_ENABLE,
     CMD_DISABLE,
-    CMD_SET,
-    CMD_GET,
+    CMD_SET_POSE,
+    CMD_GET_POSE,
     // motor
     CMD_SET_AXIS,
     CMD_GET_AXIS,
@@ -379,15 +363,15 @@ void (*funcs[COMMAND::CMD_MAX_ENUM])(String* args, int argCount) = {
     nullptr, // CMD_UNKNOWN
     enable, // CMD_ENABLE
     disable, // CMD_DISABLE
-    set, // CMD_SET
-    get, // CMD_GET
+    setPose, // CMD_SET_POSE
+    getPose, // CMD_GET_POSE
     setAxis, // CMD_SET_AXIS
     getAxis, // CMD_GET_AXIS
     nullptr, // CMD_STOP
     nullptr, // CMD_PAUSE
     nullptr, // CMD_RESUME
     home, // CMD_HOME
-    nullptr, // CMD_RESET
+    reset, // CMD_RESET
     nullptr, // CMD_STATUS
 };
 
@@ -496,7 +480,7 @@ void loop() {
     }
 
     // poll motors
-    for (int i = 0; i < AXIS_COUNT; i++) {
+    for (int i = 0; i < axisCount; i++) {
         if (axes[i] != nullptr) {
             axes[i].poll();
         }
