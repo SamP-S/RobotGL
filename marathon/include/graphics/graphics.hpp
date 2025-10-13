@@ -19,13 +19,16 @@ void Quit();
 // See docs.gl/gl3
 
 /// --- MEMORY --- ///
+// generic memory store
 struct Memory {
     Memory() = delete;  // no default constructor (REQUIRE EXTERNAL FACTORY)
     void* ptr;          // generic pointer
     uint32_t size;      // data size in bytes
 };
 
+// Allocate raw memory buffer
 const Memory* Alloc(uint32_t size);
+// Allocate raw memory buffer and copy data into it
 const Memory* Copy(const void* data, uint32_t size);
 void Release(const Memory* _mem);
 
@@ -214,6 +217,23 @@ ProgramHandle CreateProgram(
 /// TODO: compute shader
 void DestroyProgram(ProgramHandle handle);
 
+
+/// --- EXECUTION --- ///
+/// TODO: discard flags for after submit
+
+// discard all previously set state for draw call
+void Discard();
+
+// submit an empty primite for rendering
+// applies uniforms and draw state but no geometry
+// e.g. clear screen
+void Touch();
+
+// submit primitive for rendering
+void Submit(
+    ProgramHandle program,
+    uint32_t depth = 0
+);
 
 } // graphics
 
