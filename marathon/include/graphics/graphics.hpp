@@ -113,7 +113,6 @@ enum AttribType : int32_t {
     DOUBLE
 };
 
-
 struct VertexLayout {
     VertexLayout();
     VertexLayout& Begin();  // support builder design pattern
@@ -219,7 +218,16 @@ void DestroyProgram(ProgramHandle handle);
 
 
 /// --- EXECUTION --- ///
-/// TODO: discard flags for after submit
+enum DiscardFlags : uint8_t {
+    DISCARD_NONE               = 0x00,
+    DISCARD_BINDINGS           = 0x01,
+    DISCARD_INDEX_BUFFER       = 0x02,
+    DISCARD_INSTANCE_DATA      = 0x04,
+    DISCARD_STATE              = 0x08,
+    DISCARD_TRANSFORM          = 0x10,
+    DISCARD_VERTEX_STREAMS     = 0x20,
+    DISCARD_ALL                = 0xff,
+};
 
 // discard all previously set state for draw call
 void Discard();
@@ -234,6 +242,59 @@ void Submit(
     ProgramHandle program,
     uint32_t depth = 0
 );
+
+/// --- CONTEXT --- ///
+/// TODO: textures & texture bindings
+#define MAX_VERTEX_STREAM 4
+
+struct Stream {
+    void Clear() {
+        startVertex     = 0;
+        handle          = INVALID_HANDLE;
+        layoutHandle    = INVALID_HANDLE;
+    }
+
+    uint32_t            startVertex;
+    VertexBufferHandle  handle;
+    VertexLayoutHandle  layoutHandle;
+};
+
+struct RenderDraw {
+    void Clear(uint8_t flags = DISCARD_ALL) {
+        if ((flags & DISCARD_STATE) != 0) {
+            /// TODO:
+        }
+        if ((flags & DISCARD_TRANSFORM) != 0) {
+            /// TODO:
+        }
+        if ((flags & DISCARD_INSTANCE_DATA) != 0) {
+            /// TODO:
+        }
+        if ((flags & DISCARD_VERTEX_STREAMS) != 0) {
+            numVertices = UINT32_MAX;
+            streamMask = 0;
+            stream[0].Clear();
+        }
+        if ((flags & DISCARD_INDEX_BUFFER) != 0) {
+            startIndex = 0;
+            numIndices = 0;
+            indexBuffer = INVALID_HANDLE;
+            submitFlags = 0;
+        }
+
+        /// TODO:
+
+    }
+
+    Stream stream[MAX_VERTEX_STREAM];
+    uint32_t startIndex;
+    uint32_t numIndices;
+    uint32_t numVertices;
+    uint8_t  submitFlags;
+    uint8_t  streamMask;
+
+    IndexBufferHandle indexBuffer;
+};
 
 } // graphics
 
