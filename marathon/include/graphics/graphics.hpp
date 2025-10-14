@@ -33,39 +33,21 @@ const Memory* Copy(const void* data, uint32_t size);
 void Release(const Memory* _mem);
 
 
-/// --- RENDERING --- ///
-void Clear(bool clearColour, bool clearDepth, bool clearStencil);
-float* GetClearColour();
-void SetClearColour(float r, float g, float b, float a);
-double GetClearDepth();
-void SetClearDepth(double value);
-int32_t GetClearStencil();
-void SetClearStencil(int32_t value);
-
-
-/// --- STATE MANAGEMENT --- ///
-enum Winding : bool {
-    CCW,
-    CW
-};
-enum Feature : int32_t {
-    CULL_FACE,
-    DEPTH_TEST,
-    SCISSOR_TEST,
-    STENCIL_TEST
-};
-void Enable(Feature f);
-void Disable(Feature f);
-float GetPointSize();
-void SetPointSize(float size);
-float GetLineWidth();
-void SetLineWidth(float width);
-Winding GetFrontFace();
-void SetFrontFace(Winding w);
-
 /// --- VIEWPORT --- ///
 void Viewport(int32_t x, int32_t y, uint32_t width, uint32_t height);
 
+
+/// --- LIMITS --- ///
+#define MAX_VERTEX_LAYOUTS 64
+#define MAX_INDEX_BUFFERS 4096
+#define MAX_VERTEX_BUFFERS 4096
+#define MAX_VERTEX_STREAMS 4
+#define MAX_SHADERS 512
+#define MAX_TEXTURES 4096
+#define MAX_TEXTURE SAMPLERS 16
+#define MAX_FRAME_BUFFERS 128
+#define MAX_FRAME_BUFFER_ATTACHMENTS 8
+#define MAX_UNIFORMS 512
 
 /// --- HANDLES --- ///
 typedef uint32_t FrameBufferHandle;
@@ -171,19 +153,11 @@ VertexBufferHandle CreateVertexBuffer(
     const VertexLayout& layout,
     uint32_t flags = BUFFER_NONE
 );
-void SetName(
-    VertexBufferHandle handle,
-    const char* name    // zero-terminated str
-);
 void DestroyVertexBuffer(VertexBufferHandle handle);
 
 IndexBufferHandle CreateIndexBuffer(
     const Memory* mem,
     uint32_t flags = BUFFER_NONE
-);
-void SetName(
-    VertexBufferHandle handle,
-    const char* name    // zero-terminated str
 );
 void DestroyIndexBuffer(IndexBufferHandle handle);
 
@@ -230,7 +204,7 @@ enum DiscardFlags : uint8_t {
 };
 
 // discard all previously set state for draw call
-void Discard();
+void Discard(uint8_t discardFlags);
 
 // submit an empty primite for rendering
 // applies uniforms and draw state but no geometry
@@ -240,7 +214,7 @@ void Touch();
 // submit primitive for rendering
 void Submit(
     ProgramHandle program,
-    uint32_t depth = 0
+    uint8_t discardFlags
 );
 
 /// --- CONTEXT --- ///
@@ -259,7 +233,86 @@ struct Stream {
     VertexLayoutHandle  layoutHandle;
 };
 
-struct RenderDraw {
+
+/// --- STATE FLAGS --- ///
+/// TODO:
+// enable/disable write r/g/b/z
+
+// macro operations
+#define STATE_DECODE(value, mask, shift) ((value & mask) >> shift)
+#define STATE_DECODE_BYTE(value, mask, shift) (static_cast<uint8_t>((value & mask) >> shift))
+#define STATE_ENCODE(value, mask, shift) ((static_cast<uint64_t>(value) << shift) & mask)
+
+// depth test
+#define STATE_DEPTH_TEST_DISABLE            UINT64_C(0x0000000000000000)
+#define STATE_DEPTH_TEST_LESS               UINT64_C(0x0000000000000001)
+#define STATE_DEPTH_TEST_LEQUAL             UINT64_C(0x0000000000000002)
+#define STATE_DEPTH_TEST_EQUAL              UINT64_C(0x0000000000000003)
+#define STATE_DEPTH_TEST_GEQUAL             UINT64_C(0x0000000000000004)
+#define STATE_DEPTH_TEST_GREATER            UINT64_C(0x0000000000000005)
+#define STATE_DEPTH_TEST_NOTEQUAL           UINT64_C(0x0000000000000006)
+#define STATE_DEPTH_TEST_NEVER              UINT64_C(0x0000000000000007)
+#define STATE_DEPTH_TEST_ALWAYS             UINT64_C(0x0000000000000008)
+#define STATE_DEPTH_TEST_SHIFT              0
+#define STATE_DEPTH_TEST_MASK               UINT64_C(0x000000000000000f)
+#define STATE_DEPTH_TEST_DEFAULT            STATE_DEPTH_TEST_DISABLE
+
+// face culling
+#define STATE_CULL_DISABLE                  UINT64_C(0x0000000000000000)
+#define STATE_CULL_CW                       UINT64_C(0x0000000000000010)
+#define STATE_CULL_CCW                      UINT64_C(0x0000000000000020)
+#define STATE_CULL_SHIFT                    4
+#define STATE_CULL_MASK                     UINT64_C(0x00000000000000f0)
+#define STATE_CULL_DEFAULT                  STATE_CULL_CCW
+
+/// TODO: should default be at 0 for safety??
+// primitive types
+#define STATE_PRIM_POINTS                   UINT64_C(0x0000000000000100)
+#define STATE_PRIM_LINE_STRIP               UINT64_C(0x0000000000000200)
+#define STATE_PRIM_LINE_LOOP                UINT64_C(0x0000000000000300)
+#define STATE_PRIM_LINES                    UINT64_C(0x0000000000000400)
+#define STATE_PRIM_LINE_STRIP_ADJACENCY     UINT64_C(0x0000000000000500)
+#define STATE_PRIM_LINES_ADJACENCY          UINT64_C(0x0000000000000600)
+#define STATE_PRIM_TRIANGLE_STRIP           UINT64_C(0x0000000000000700)
+#define STATE_PRIM_TRIANGLE_FAN             UINT64_C(0x0000000000000800)
+#define STATE_PRIM_TRIANGLES                UINT64_C(0x0000000000000900)
+#define STATE_PRIM_TRIANGLE_STRIP_ADJACENCY UINT64_C(0x0000000000000a00)
+#define STATE_PRIM_TRIANGLES_ADJACENCY      UINT64_C(0x0000000000000b00)
+#define STATE_PRIM_SHIFT                    8
+#define STATE_PRIM_MASK                     UINT64_C(0x0000000000000f00)
+#define STATE_PRIM_DEFAULT                  STATE_PRIM_TRIANGLES                   
+
+// point size (byte)
+#define STATE_POINT_SIZE_DEFAULT            UINT64_C(0x0000000000001000)
+#define STATE_POINT_SIZE_SHIFT              12
+#define STATE_POINT_SIZE_MASK               UINT64_C(0x00000000000ff000)
+
+// line width (byte)
+#define STATE_LINE_WIDTH_DEFAULT            UINT64_C(0x0000000000100000)
+#define STATE_LINE_WIDTH_SHIFT              20
+#define STATE_LINE_WIDTH_MASK               UINT64_C(0x000000000ff00000)
+
+void SetState(
+    uint64_t state
+);
+
+/// --- CLEAR FLAGS --- ///
+
+enum ClearFlags : uint16_t {
+    CLEAR_NONE      = UINT16_C(0x0000),
+    CLEAR_COLOUR    = UINT16_C(0x0001),
+    CLEAR_DEPTH     = UINT16_C(0x0002),
+    CLEAR_STENCIL   = UINT16_C(0x0004)
+};
+
+void SetClear(
+    uint16_t flags,
+    uint32_t rgba = 0x000000ff,
+    float depth = 1.0f,
+    uint8_t stencil = 0
+);
+
+struct DrawCall {
     void Clear(uint8_t flags = DISCARD_ALL) {
         if ((flags & DISCARD_STATE) != 0) {
             /// TODO:
@@ -294,7 +347,10 @@ struct RenderDraw {
     uint8_t  streamMask;
 
     IndexBufferHandle indexBuffer;
+
+
 };
+
 
 } // graphics
 
