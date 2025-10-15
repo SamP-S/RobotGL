@@ -348,8 +348,11 @@ struct DrawCall {
 
     IndexBufferHandle indexBuffer;
 
-
 };
+
+class CommandBuffer;
+class IRendererContext;
+class Context;
 
 
 } // graphics
