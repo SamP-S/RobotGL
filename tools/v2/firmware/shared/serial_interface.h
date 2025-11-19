@@ -17,9 +17,9 @@ enum CommandType {
 };
 
 struct ParsedCommand {
-    CommandType type;
-    uint8_t id;
-    float angles[POSE_ANGLES];
+    CommandType type = CMD_UNKNOWN;
+    uint8_t id = 0;
+    float angles[POSE_ANGLES] = {0};
     bool hasAngles = false;
     bool valid = false;
 };
@@ -79,6 +79,19 @@ private:
         return true;
     }
 
+    bool extractAngles(char* _anglesStr, float _outAngles[POSE_ANGLES]) {
+        char* token = strtok(_anglesStr, ";");
+        for (int i = 0; i < POSE_ANGLES; i++) {
+            if (token == nullptr || token[0] == '\0') {
+                this->sendError("TOO_FEW_ANGLES");
+                return false;
+            }
+            _outAngles[i] = atof(token);
+            token = strtok(nullptr, ";");
+        }
+        return true;
+    }
+
     bool parseSetPose(const char* _cmd, ParsedCommand& _outCmd) {
         // extract id
         char idStr[MAX_ID_LENGTH] = "";
@@ -92,19 +105,9 @@ private:
         }
         _outCmd.id = atoi(idStr);
         
-        // Parse angles
-        char* token = strtok(anglesStr, ";");
-        int i = 0;
-        while (token != nullptr && i < POSE_ANGLES) {
-            if (i >= POSE_ANGLES) {
-                this->sendError("TOO_MANY_ANGLES");
-                return false;
-            } else if (token == nullptr || token[0] == '\0') {
-                this->sendError("TOO_FEW_ANGLES");
-                return false;
-            }
-            _outCmd.angles[i++] = atof(token);
-            token = strtok(nullptr, ";");
+        // parse angles
+        if (!this->extractAngles(anglesStr, _outCmd.angles)) {
+            return false;
         }
         _outCmd.hasAngles = true;
         return true;
@@ -148,9 +151,13 @@ public:
             return false;
         }
 
+        // clear output command
+        _outCmd = ParsedCommand();
+
         // read line, expecting newline termination
         String line = m_serial.readStringUntil('\n');
         line.trim();
+
         // strip <> and convert to C string
         if (line.length() < 2 || line[0] != '<' || line[line.length() - 1] != '>') {
             this->sendError("MISSING_ANGLE_BRACKETS");
@@ -159,8 +166,8 @@ public:
         line = line.substring(1, line.length() - 1);
         const char* cmd = line.c_str();
 
+        // switch exec on command type
         _outCmd.type = this->identifyType(cmd);
-
         bool valid = false;
         switch (_outCmd.type) {
             case CMD_SET_POSE:
@@ -180,6 +187,8 @@ public:
                 valid = false;
                 break;
         }
+
+        // set validity flag
         _outCmd.valid = valid;
         return true;
     }
