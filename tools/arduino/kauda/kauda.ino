@@ -23,6 +23,7 @@
 */
 
 // std libs
+#include <ArduinoLog.h>
 #include <Servo.h>
 #include <AccelStepper.h>
 #include <Arduino.h>
@@ -51,35 +52,17 @@ const int coolEnPin = A3;
 const int spinEnPin = 12;
 const int spinDirPin = 13;
 
-enum COMMAND : int {
-    CMD_UNKNOWN = 0,
-    // robot
-    CMD_ENABLE,
-    CMD_DISABLE,
-    CMD_SET,
-    CMD_GET,
-    // motor
-    CMD_SET_AXIS,
-    CMD_GET_AXIS,
-    // movement
-    CMD_STOP,
-    CMD_PAUSE,
-    CMD_RESUME,
-    // operation
-    CMD_HOME,
-    CMD_RESET,
-    CMD_STATUS,
-    CMD_MAX_ENUM,
-};
-
-// motor interface
+// ====================
+// = AXIS
+// ====================
 class IAxis {
 public:
-    virtual void attach() = 0;
-    virtual void detach() = 0;
-    virtual void Set(float target) = 0;
-    virtual float Get() = 0;
-    virtual void Poll() = 0;
+    virtual void enable() = 0;
+    virtual void disable() = 0;
+    virtual void reset() = 0;
+    virtual void set(float target) = 0;
+    virtual float get() = 0;
+    virtual void poll() = 0;
 };
 
 #define STEPPER_MAX_SPEED 1000
@@ -90,40 +73,51 @@ public:
 
 class StepperAxis : public IAxis {
 private:
+
+    // motor control
     int _stepPin;
     int _dirPin;
-    float _minAngle;
-    float _maxAngle;
-    float _gearRatio;
     AccelStepper _stepper; 
+    // user defined constraints
+    int _minAngle;
+    int _maxAngle;
+    float _gearRatio;
+    // motor constraints
+    const int _MIN_MIN_ANGLE = 0;
+    const int _MAX_MAX_ANGLE = 180;
+    const int _ANGLE_OFFSET = 90;
 
 public:
-    StepperAxis(int stepPin, int dirPin, float minAngle, float maxAngle, float gearRatio = 1.0f)
+    StepperAxis(int stepPin, int dirPin, int enPin, int minAngle, int maxAngle, float gearRatio = 1.0f)
         : _stepPin(stepPin), _dirPin(dirPin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
             _stepper(STEPPER_INTERFACE, stepPin, dirPin) {
         _stepper.setMaxSpeed(STEPPER_MAX_SPEED);
         _stepper.setAcceleration(STEPPER_ACCELERATION);
     }
 
-    void attach() override {
-        // No specific attach needed for stepper
+    void enable() override {
+        digitalWrite(enPin, LOW);
     }
 
-    void detach() override {
-        // No specific detach needed for stepper
+    void disable() override {
+        digitalWrite(enPin, HIGH);
     }
 
-    void Set(float target) override {
+    void reset() override {
+        _stepper.setCurrentPosition(0);
+    }
+
+    void set(float target) override {
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         int targetSteps = targetAngle / STEPPER_STEP_ANGLE;
         _stepper.moveTo(targetSteps);
     }
     
-    float Get() override {
+    float get() override {
         return _stepper.currentPosition() * STEPPER_STEP_ANGLE;
     }
 
-    void Poll() {
+    void poll() {
         if (_stepper.distanceToGo() != 0) {
             _stepper.runSpeed();
         }
@@ -143,7 +137,7 @@ private:
     AccelStepper _stepperB;
 
 public:
-    DualStepperAxis(int stepAPin, int dirAPin, int stepBPin, int dirBPin, float minAngle, float maxAngle, float gearRatio = 1.0f)
+    DualStepperAxis(int stepAPin, int dirAPin, int enAPin, int stepBPin, int dirBPin, int enBPin, float minAngle, float maxAngle, float gearRatio = 1.0f)
         : _stepAPin(stepAPin), _dirAPin(dirAPin), _stepBPin(stepBPin), _dirBPin(dirBPin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
           _stepperA(STEPPER_INTERFACE, stepAPin, dirAPin), _stepperB(STEPPER_INTERFACE, stepBPin, dirBPin) {
         _stepperA.setMaxSpeed(STEPPER_MAX_SPEED);
@@ -152,26 +146,33 @@ public:
         _stepperB.setAcceleration(STEPPER_ACCELERATION);
     }
 
-    void attach() override {
-        // No specific attach needed for stepper
+    void enable() override {
+        digitalWrite(enAPin, LOW);
+        digitalWrite(enBPin, LOW);
     }
 
-    void detach() override {
-        // No specific detach needed for stepper
+    void disable() override {
+        digitalWrite(enAPin, HIGH);
+        digitalWrite(enBPin, HIGH);
     }
 
-    void Set(float target) override {
+    void reset() override {
+        _stepperA.setCurrentPosition(0);
+        _stepperB.setCurrentPosition(0);
+    }
+
+    void set(float target) override {
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         int targetSteps = targetAngle / STEPPER_STEP_ANGLE;
         _stepperA.moveTo(targetSteps);
         _stepperB.moveTo(-targetSteps);
     }
     
-    float Get() override {
+    float get() override {
         return _stepperA.currentPosition() * STEPPER_STEP_ANGLE;
     }
 
-    void Poll() {
+    void poll() {
         if (_stepperA.distanceToGo() != 0) {
             _stepperA.run();
         }
@@ -192,32 +193,221 @@ private:
 public:
     ServoAxis(int pin, float minAngle, float maxAngle, float gearRatio = 1.0f)
         : _pin(pin), _minAngle(minAngle), _maxAngle(maxAngle), _gearRatio(gearRatio),
-          _servo(Servo()) {
-            _servo.attach(_pin);
-    }
+          _servo(Servo()) {}
 
-    void attach() override {
-
+    void enable() override {
+        _servo.attach(_pin);
     }   
 
-    void detach() override {
-
+    void disable() override {
+        _servo.detach();
     }
 
-    void Set(float target) override {
+    void reset() override {
+        // nothing required
+    }
+
+    void set(float target) override {
         float targetAngle = constrain(target, _minAngle, _maxAngle);
         _servo.write(targetAngle);
     }
 
-    float Get() override {
+    float get() override {
         return _servo.read();
+    }
+
+    void poll() override {
+        // nothing required
     }
 };
 
-#define AXIS_COUNT 3
-#define AXIS_HOME_ANGLE 0.0f
+// ====================
+// = COMMANDS OPERATIONS
+// ====================
 
-IAxis** axes = new IAxis*[AXIS_COUNT];
+IAxis* axes = nullptr;
+int axisCount = 0;
+
+void enable(String* args, int argCount) {
+    if (argCount != 1) {
+        Serial.println("ENABLE requires 0 arguments.");
+        return;
+    }
+    for (int i = 0; i < axisCount; i++) {
+        axes[i].enable();
+    }
+}
+
+void disable(String* args, int argCount) {
+    if (argCount != 1) {
+        Serial.println("DISABLE requries 0 arguments.");
+        return;
+    }
+    for (int i = 0; i < axisCount; i++) {
+        axes[i].disable();
+    }
+}
+
+void setPose(String* args, int argCount) {
+    if (argCount != axisCount + 1) {
+        Serial.print("SET_POSE requires "); 
+        Serial.print(axisCount); 
+        Serial.println(" arguments: <angle>..."); 
+        return;
+    }
+    for (int i = 0; i < axisCount; i++) {
+        float angle = args[1+i].toFloat();
+        axes[i].set(angle);
+        Serial.print("Axis ");
+        Serial.print(i);
+        Serial.print(" set to angle ");
+        Serial.println(angle);
+    }
+}
+
+void getPose(String* args, int argCount) {
+    if (argCount != 1) {
+        Serial.print("GET_POSE requires 0 arguments.");
+        return;
+    }
+    for (int i = 0; i < axisCount; i++) {
+        Serial.print("Axis ");
+        Serial.print(axes[i].get());
+        Serial.print(" set to angle ");
+        Serial.println(angle);
+    }
+}
+
+void setAxis(String* args, int argCount) {
+    if (argCount != 3) {
+        Serial.println("SET_AXIS requires 2 arguments: <axis> <angle>");
+        return;
+    }
+    int axis = args[1].toInt();
+    float angle = args[2].toFloat();
+    if (axis < 0 || axis >= axisCount) {
+        Serial.println("Invalid axis index");
+        return;
+    }
+    axes[axis].set(angle);
+    Serial.print("Axis ");
+    Serial.print(axis);
+    Serial.print(" set to angle ");
+    Serial.println(angle);
+}
+
+void getAxis(String* args, int argCount) {
+    if (argCount != 2) {
+        Serial.println("ERROR: GET_AXIS requires 1 argument: <axis>");
+        return;
+    }
+    int axis = args[1].toInt();
+    if (axis < 0 || axis >= axisCount) {
+        Serial.println("ERROR: Invalid axis index");
+        return;
+    }
+    float angle = axes[axis].get();
+    Serial.print("Axis ");
+    Serial.print(axis);
+    Serial.print(" angle: ");
+    Serial.println(angle);
+}
+
+void home(String* args, int argCount) {
+    for (int i = 0; i < axisCount; i++)
+        axes[i].set(0.0f);
+}
+
+void reset(String* args, int argCount) {
+    for (int i = 0; i < axisCount; i++)
+        axes[i].reset();
+}
+
+// ====================
+// = SERIAL COMMANDS
+// ====================
+enum COMMAND : int {
+    CMD_UNKNOWN = 0,
+    // robot
+    CMD_ENABLE,
+    CMD_DISABLE,
+    CMD_SET_POSE,
+    CMD_GET_POSE,
+    // motor
+    CMD_SET_AXIS,
+    CMD_GET_AXIS,
+    // movement
+    CMD_STOP,
+    CMD_PAUSE,
+    CMD_RESUME,
+    // operation
+    CMD_HOME,
+    CMD_RESET,
+    CMD_STATUS,
+    CMD_MAX_ENUM,
+};
+
+void parseCommand(const String& cmd, String* args, int& argCount) {
+    argCount = 0;
+    int startIndex = 0;
+    int spaceIndex;
+
+    while ((spaceIndex = cmd.indexOf(' ', startIndex)) != -1) {
+        args[argCount++] = cmd.substring(startIndex, spaceIndex);
+        startIndex = spaceIndex + 1;
+    }
+    args[argCount++] = cmd.substring(startIndex);
+}
+
+void (*funcs[COMMAND::CMD_MAX_ENUM])(String* args, int argCount) = {
+    nullptr, // CMD_UNKNOWN
+    enable, // CMD_ENABLE
+    disable, // CMD_DISABLE
+    setPose, // CMD_SET_POSE
+    getPose, // CMD_GET_POSE
+    setAxis, // CMD_SET_AXIS
+    getAxis, // CMD_GET_AXIS
+    nullptr, // CMD_STOP
+    nullptr, // CMD_PAUSE
+    nullptr, // CMD_RESUME
+    home, // CMD_HOME
+    reset, // CMD_RESET
+    nullptr, // CMD_STATUS
+};
+
+void processCommand(const String& cmd) {
+    // parse command
+    Serial.println("INFO: Received command: " + cmd);
+    String* args = new String[12];
+    int argCount = 0;
+    parseCommand(cmd, args, argCount);
+
+    // empty command
+    if (argCount == 0) {
+        Serial.println("WARNING: Empty command");
+        return;
+    }
+
+    // map command to enum
+    int cmdID = args[0].toInt();
+    if (cmdID < 0 || cmdID >= COMMAND::CMD_MAX_ENUM) {
+        Serial.println("WARNING: Invalid command index");
+        return;
+    } else if (cmdID == CMD_UNKNOWN) {
+        Serial.println("WARNING: Unknown command");
+        return;
+    }
+
+    // execute command
+    if (funcs[cmdID] != nullptr) {
+        funcs[cmdID](args, argCount);
+    } else {
+        Serial.println("WARNING: Command not implemented");
+    }
+
+    // clean up
+    delete[] args;
+}
 
 void setup() {
     Serial.begin(115200);
@@ -245,122 +435,27 @@ void setup() {
     pinMode(coolEnPin, OUTPUT);     // Coolant Enable
     pinMode(spinEnPin, OUTPUT);     // Spindle Enable
     pinMode(spinDirPin, OUTPUT);    // Spindle Direction
+    
+    // declare stepper motor test
+    axisCount = 1;
+    axes = new StepperAxis[1]{
+        StepperAxis(stepXPin, dirXPin, enPin, 0.0f, 180.0f)
+    };
 
-    digitalWrite(enPin, LOW); // Enable motors
-    // init test motor
-    axes[0] = new StepperAxis(stepXPin, dirXPin, 0.0f, 180.0f);
-    // // init arm
-    // axes[0] = new DualStepperAxis(stepXPin, dirXPin, stepYPin, dirYPin, 0.0f, 180.0f);
-    // axes[1] = new StepperAxis(stepZPin, dirZPin, 0.0f, 180.0f);
-    // axes[2] = new StepperAxis(stepAPin, dirAPin, 0.0f, 180.0f);
-}
-
-void setAxis(String* args, int argCount) {
-    if (argCount < 3) {
-        Serial.println("SET_AXIS requires 2 arguments: <axis> <angle>");
-        return;
-    }
-    int axis = args[1].toInt();
-    float angle = args[2].toFloat();
-    if (axis < 0 || axis >= AXIS_COUNT) {
-        Serial.println("Invalid axis index");
-        return;
-    }
-    axes[axis]->Set(angle);
-    Serial.print("Axis ");
-    Serial.print(axis);
-    Serial.print(" set to angle ");
-    Serial.println(angle);
-}
-
-void getAxis(String* args, int argCount) {
-    if (argCount < 2) {
-        Serial.println("GET_AXIS requires 1 argument: <axis>");
-        return;
-    }
-    int axis = args[1].toInt();
-    if (axis < 0 || axis >= AXIS_COUNT) {
-        Serial.println("Invalid axis index");
-        return;
-    }
-    float angle = axes[axis]->Get();
-    Serial.print("Axis ");
-    Serial.print(axis);
-    Serial.print(" angle: ");
-    Serial.println(angle);
-}
-
-void home(String* args, int argCount) {
-    for (int i = 0; i < AXIS_COUNT; i++)
-        axes[i]->Set(AXIS_HOME_ANGLE);
-}
-
-void parseCommand(const String& cmd, String* args, int& argCount) {
-    argCount = 0;
-    int startIndex = 0;
-    int spaceIndex;
-
-    while ((spaceIndex = cmd.indexOf(' ', startIndex)) != -1) {
-        args[argCount++] = cmd.substring(startIndex, spaceIndex);
-        startIndex = spaceIndex + 1;
-    }
-    args[argCount++] = cmd.substring(startIndex);
-}
-
-void (*funcs[COMMAND::CMD_MAX_ENUM])(String* args, int argCount) = {
-    nullptr, // CMD_UNKNOWN
-    nullptr, // CMD_ENABLE
-    nullptr, // CMD_DISABLE
-    nullptr, // CMD_SET
-    nullptr, // CMD_GET
-    setAxis, // CMD_SET_AXIS
-    getAxis, // CMD_GET_AXIS
-    nullptr, // CMD_STOP
-    nullptr, // CMD_PAUSE
-    nullptr, // CMD_RESUME
-    home, // CMD_HOME
-    nullptr, // CMD_RESET
-    nullptr, // CMD_STATUS
-};
-
-void processCommand(const String& cmd) {
-    // parse command
-    Serial.println("Received command: " + cmd);
-    String* args = new String[8];
-    int argCount = 0;
-    parseCommand(cmd, args, argCount);
-
-    // empty command
-    if (argCount == 0) {
-        Serial.println("Empty command");
-        return;
-    }
-
-    // map command to enum
-    int cmdID = args[0].toInt();
-    if (cmdID < 0 || cmdID >= COMMAND::CMD_MAX_ENUM) {
-        Serial.println("Invalid command index");
-        return;
-    } else if (cmdID == CMD_UNKNOWN) {
-        Serial.println("Unknown command");
-        return;
-    }
-
-    // execute command
-    if (funcs[cmdID] != nullptr) {
-        funcs[cmdID](args, argCount);
-    } else {
-        Serial.println("Command not implemented");
-    }
-
-    // clean up
-    delete[] args;
+    // // declare stepper motor robot section
+    // axisCount = 3;
+    // axes = new StepperAxis[3]{
+    //     DualStepperAxis(stepXPin, dirXPin, enPin, stepYPin, dirYPin, enPin, 0.0f, 180.0f),
+    //     StepperAxis(stepZPin, dirZPin, enPin, 0.0f, 180.0f),
+    //     StepperAxis(stepAPin, dirAPin, enPin, 0.0f, 180.0f)
+    // };
 }
 
 void loop() {
     String inputBuffer = "";
     bool cmdReading = false;
     bool cmdFinished = false;
+
     // read serial
     while (Serial.available() && !cmdFinished) {
         char c = Serial.read();
@@ -385,9 +480,9 @@ void loop() {
     }
 
     // poll motors
-    for (int i = 0; i < AXIS_COUNT; i++) {
+    for (int i = 0; i < axisCount; i++) {
         if (axes[i] != nullptr) {
-            // axes[i]->Poll();
+            axes[i].poll();
         }
     }
 

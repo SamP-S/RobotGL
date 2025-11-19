@@ -11,3 +11,6 @@
 [submodule "external/la"]
 	path = external/la
 	url = git@github.com:SamP-S/LA.git
+[submodule "external/bgfx"]
+	path = external/bgfx
+	url = git@github.com:bkaradzic/bgfx.git
