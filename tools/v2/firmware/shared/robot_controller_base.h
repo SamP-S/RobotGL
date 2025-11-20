@@ -1,15 +1,15 @@
 #pragma once
 
-#include "serial_interface.h"
 #include "pose.h"
+#include "serial_interface.h"
 
 class RobotControllerBase {
 protected:
     SerialInterface m_iface;
     Pose m_poseBuffer[POSE_BUFFER_SIZE];
 
-    uint8_t m_activePose = 0;
-    bool m_moving = false;
+    // uint8_t m_activePose = 0;
+    // bool m_moving = false;
 
     void handleSetPose(id_t _id, const float _angles[POSE_ANGLE_COUNT]) {
         if (_id == 0) {
@@ -33,12 +33,12 @@ protected:
         m_iface.sendReturnPose(_id, m_poseBuffer[_id]);
     }
 
-    virtual void handleGoTo() = 0;
+    virtual void handleGoTo(id_t _id) = 0;
     virtual void handleStop() = 0;
 
 public:
-    RobotControllerBase(SerialInterface& _si)
-        : m_serial(_si) {
+    RobotControllerBase(SerialInterface& _iface)
+        : m_iface(_iface) {
         // initialize pose buffer to zero
         for (int i = 0; i < POSE_BUFFER_SIZE; ++i) {
             for (int j = 0; j < POSE_ANGLE_COUNT; ++j) {
