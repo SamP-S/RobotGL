@@ -1,0 +1,13 @@
+# Kauda Robot Arm
+
+### DH Parameters
+Note: The following parameters only work when the base joint is aligned such that Z is facing up, y into "screen", x to the right (right hand rule)
+
+| Joint         | a (link length/translate x) | alpha (link twist/rotate x) | d (link offset/translate z) | theta (joint angle/rotate z) | 
+|---------------|-----------------|---------------------|-----------------|--------------------|
+| J0 - Base     | 0.000000 | +pi/2 | 0.078135 | q0 |
+| J1 - Shoulder | 0.000000 | -pi/2 | 0.000000 | q1 |
+| J2 - Elbow    | 0.199907 | 0.000 | 0.000000 | q2 |
+| J3 - Forearm  | 0.066606 | +pi/2 | 0.000000 | q3 |
+| J4 - Wrist    | 0.132927 | 0.000 | 0.000000 | q4 |
+
