@@ -160,8 +160,17 @@ public:
         line.trim();
 
         // strip <> and convert to C string
-        if (line.length() < 2 || line[0] != '<' || line[line.length() - 1] != '>') {
-            this->sendError("MISSING_ANGLE_BRACKETS");
+        if (line.length() < 2) {
+            this->sendError("COMMAND_TOO_SHORT");
+            return true;
+        } else if (line.length() > MAX_CMD_LENGTH) {
+            this->sendError("COMMAND_TOO_LONG");
+            return true;
+        } else if (line[0] != '<') {
+            this->sendError("MISSING_FRONT_ANGLE_BRACKET");
+            return true;
+        } else if (line[line.length() - 1] != '>') {
+            this->sendError("MISSING_BACK_ANGLE_BRACKET");
             return true;
         }
         line = line.substring(1, line.length() - 1);
@@ -227,10 +236,8 @@ public:
         m_serial.println(">");
     }
 
-    void sendStopped(id_t _id) {
-        m_serial.print("<STOPPED ");
-        m_serial.print(_id);
-        m_serial.println(">");
+    void sendStopped() {
+        m_serial.println("<STOPPED>");
     }
 
     void sendError(const char* _reason, const char* _details = nullptr) {

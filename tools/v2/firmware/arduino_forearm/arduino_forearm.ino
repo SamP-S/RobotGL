@@ -31,7 +31,7 @@ private:
 
     void handleStop() override {
         // cant stop servos??
-        m_iface.sendStopped(m_targetPoseID);
+        m_iface.sendStopped();
     }
 
     int transformAngleToServo(float _angle, float _angleMin, float _angleMax) {
@@ -71,6 +71,8 @@ public:
                     break;
             }
         }
+
+        delay(5);  // small delay to avoid overwhelming Serial
     }
 };
 
@@ -79,6 +81,13 @@ ServoController controller(serialInterface);
 
 void setup() {
     Serial.begin(115200);
+    // wait for Serial Monitor
+    while (!Serial);
+    delay(50);
+    // clear any existing input
+    while (Serial.available()) {
+        Serial.read();
+    }
     controller.setup();
 }
 
