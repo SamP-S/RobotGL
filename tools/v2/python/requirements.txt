@@ -1,5 +1,6 @@
-numpy<2
+numpy
 pygame
 pyopengl
 pyopengl_accelerate
-roboticstoolbox-python
+ikpy
+pyserial
