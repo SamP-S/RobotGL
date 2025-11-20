@@ -7,6 +7,7 @@
 #define SERVO_MIN 0
 #define SERVO_MAX 180
 #define SERVO_MID 90
+#define SERVO_SPEED (600.0f / 180.0f)  // milliseconds per degree
 typedef unsigned long mtime_t;
 
 class ServoController : public RobotControllerBase {
@@ -14,7 +15,10 @@ private:
     Servo m_j3Forearm;
     Servo m_j4Wrist;
 
+    id_t m_activePoseID = 0;
     id_t m_targetPoseID = 0;
+    mtime_t m_moveEndTime = 0;
+    bool moving = false;
 
     void handleGoTo(id_t _id) override {
         if (_id >= POSE_BUFFER_SIZE) {
@@ -22,10 +26,16 @@ private:
             return;
         }
         m_targetPoseID = _id;
-        int j3Angle = transformAngleToServo(m_poseBuffer[_id].angles[3], -90.0f, 90.0f);
-        int j4Angle = transformAngleToServo(m_poseBuffer[_id].angles[4], -90.0f, 90.0f);
-        m_j3Forearm.write(j3Angle);
-        m_j4Wrist.write(j4Angle);
+        moving = true;
+        int j3ActiveAngle = transformAngleToServo(m_poseBuffer[m_activePoseID].angles[3], -90.0f, 90.0f);
+        int j4ActiveAngle = transformAngleToServo(m_poseBuffer[m_activePoseID].angles[4], -90.0f, 90.0f);
+        int j3TargetAngle = transformAngleToServo(m_poseBuffer[_id].angles[3], -90.0f, 90.0f);
+        int j4TargetAngle = transformAngleToServo(m_poseBuffer[_id].angles[4], -90.0f, 90.0f);
+        int j3Delta = abs(j3TargetAngle - j3ActiveAngle);
+        int j4Delta = abs(j4TargetAngle - j4ActiveAngle);
+        m_moveEndTime = millis() + (mtime_t)(max(j3Delta, j4Delta) * SERVO_SPEED);
+        m_j3Forearm.write(j3TargetAngle);
+        m_j4Wrist.write(j4TargetAngle);
         m_iface.sendAccepted(_id);
     }
 
@@ -46,6 +56,8 @@ public:
     void setup() override {
         m_j3Forearm.attach(9); // attach forearm servo to pin 9
         m_j4Wrist.attach(10);  // attach wrist servo to pin 10
+        m_j3Forearm.write(90);
+        m_j4Wrist.write(90);
     }
 
     void loop() override {
@@ -70,6 +82,12 @@ public:
                 default:
                     break;
             }
+        }
+
+        if (moving && millis() >= m_moveEndTime) {
+            m_activePoseID = m_targetPoseID;
+            moving = false;
+            m_iface.sendCompleted(m_activePoseID);
         }
 
         delay(5);  // small delay to avoid overwhelming Serial
