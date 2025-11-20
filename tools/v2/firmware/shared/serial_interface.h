@@ -6,6 +6,7 @@
 #define MAX_CMD_LENGTH 128
 #define MAX_ID_LENGTH 16
 #define MAX_ANGLE_LENGTH 64
+typedef uint8_t id_t;
 
 enum CommandType {
     CMD_UNKNOWN = 0,
@@ -18,8 +19,8 @@ enum CommandType {
 
 struct ParsedCommand {
     CommandType type = CMD_UNKNOWN;
-    uint8_t id = 0;
-    float angles[POSE_ANGLES] = {0};
+    id_t id = 0;
+    float angles[POSE_ANGLE_COUNT] = {0};
     bool hasAngles = false;
     bool valid = false;
 };
@@ -79,9 +80,9 @@ private:
         return true;
     }
 
-    bool extractAngles(char* _anglesStr, float _outAngles[POSE_ANGLES]) {
+    bool extractAngles(char* _anglesStr, float _outAngles[POSE_ANGLE_COUNT]) {
         char* token = strtok(_anglesStr, ";");
-        for (int i = 0; i < POSE_ANGLES; i++) {
+        for (int i = 0; i < POSE_ANGLE_COUNT; i++) {
             if (token == nullptr || token[0] == '\0') {
                 this->sendError("TOO_FEW_ANGLES");
                 return false;
@@ -193,13 +194,13 @@ public:
         return true;
     }
 
-    void sendAccepted(uint8_t _id) {
+    void sendAccepted(id_t _id) {
         m_serial.print("<ACCEPTED ");
         m_serial.print(_id);
         m_serial.println(">");
     }
 
-    void sendRejected(uint8_t _id, const char* _reason) {
+    void sendRejected(id_t _id, const char* _reason) {
         m_serial.print("<REJECTED ");
         m_serial.print(_id);
         m_serial.print(" ");
@@ -207,11 +208,11 @@ public:
         m_serial.println(">");
     }
 
-    void sendReturnPose(uint8_t _id, const Pose& _pose) {
+    void sendReturnPose(id_t _id, const Pose& _pose) {
         m_serial.print("<POSE ");
         m_serial.print(_id);
         m_serial.print(" ");
-        for (int i = 0; i < POSE_ANGLES; ++i) {
+        for (int i = 0; i < POSE_ANGLE_COUNT; ++i) {
             if (i > 0) {
                 m_serial.print(";");
             }
@@ -220,13 +221,13 @@ public:
         m_serial.println(">");
     }
 
-    void sendCompleted(uint8_t _id) {
+    void sendCompleted(id_t _id) {
         m_serial.print("<COMPLETED ");
         m_serial.print(_id);
         m_serial.println(">");
     }
 
-    void sendStopped(uint8_t _id) {
+    void sendStopped(id_t _id) {
         m_serial.print("<STOPPED ");
         m_serial.print(_id);
         m_serial.println(">");
