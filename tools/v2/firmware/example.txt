@@ -1,5 +1,7 @@
 // forearm/wrist test
-<SET_POSE id=1 angles=0;0;0;30;30>
-<SET_POSE id=2 angles=0;0;0;30;-30>
+<SET_POSE id=1 angles=30;30;30;30;30>
+<SET_POSE id=2 angles=-30;-30;-30;-30;-30>
+<SET_POSE id=3 angles=0;0;0;90;90>
+<SET_POSE id=4 angles=0;0;0;-90;-90>
 <GO_TO id=1>
 <GO_TO id=2>
