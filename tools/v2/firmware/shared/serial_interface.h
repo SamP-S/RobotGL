@@ -204,23 +204,23 @@ public:
     }
 
     void sendAccepted(id_t _id) {
-        m_serial.print("<ACCEPTED ");
+        m_serial.print("<ACCEPTED id=");
         m_serial.print(_id);
         m_serial.println(">");
     }
 
     void sendRejected(id_t _id, const char* _reason) {
-        m_serial.print("<REJECTED ");
+        m_serial.print("<REJECTED id=");
         m_serial.print(_id);
-        m_serial.print(" ");
+        m_serial.print(" reason=");
         m_serial.print(_reason);
         m_serial.println(">");
     }
 
     void sendReturnPose(id_t _id, const Pose& _pose) {
-        m_serial.print("<POSE ");
+        m_serial.print("<POSE id=");
         m_serial.print(_id);
-        m_serial.print(" ");
+        m_serial.print(" angles=");
         for (int i = 0; i < POSE_ANGLE_COUNT; ++i) {
             if (i > 0) {
                 m_serial.print(";");
@@ -231,23 +231,26 @@ public:
     }
 
     void sendCompleted(id_t _id) {
-        m_serial.print("<COMPLETED ");
+        m_serial.print("<COMPLETED id=");
         m_serial.print(_id);
         m_serial.println(">");
     }
 
     void sendStopped() {
-        m_serial.println("<STOPPED>");
+        m_serial.print("<STOPPED");
+        m_serial.println(">");
     }
 
     void sendError(const char* _reason, const char* _details = nullptr) {
-        m_serial.print("<ERROR ");
+        m_serial.print("<ERROR id=");
+        m_serial.print(_id);
+        m_serial.print(" reason='");
         m_serial.print(_reason);
         if (_details) {
             m_serial.print(": ");
             m_serial.print(_details);
         }
-        m_serial.println(">");
+        m_serial.println("'>");
     }
 
 };
