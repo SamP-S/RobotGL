@@ -2,6 +2,7 @@ import serial
 import time
 import re
 from collections import deque
+import numpy as np
 
 
 class ArmController:
@@ -36,8 +37,10 @@ class ArmController:
     def __init__(self, port):
         # Serial port may throw if not available; let caller handle exceptions
         self.ser = serial.Serial(port, baudrate=115200, timeout=0.2)
+        self.port = port
         # give Arduino bootloader time if needed
         time.sleep(2)
+        self.poses = [[0.0] * 5 for _ in range(32)]
 
         # runtime state
         self.readyForMotion = True  # logically ready to accept new high-level actions
@@ -58,7 +61,10 @@ class ArmController:
     def enqueue_set_pose(self, idx, angles):
         if idx < 1 or idx >= self.MAX_POSES:
             raise ValueError(f"Pose index {idx} out of range (1-{self.MAX_POSES-1})")
-        self._queue.append({"cmd": "set_pose", "id": idx, "angles": list(angles)})
+        # Convert angles from radians to degrees
+        angles_deg = [a * 180.0 / np.pi for a in angles]
+        self.poses[idx] = angles_deg
+        self._queue.append({"cmd": "set_pose", "id": idx, "angles": angles_deg})
 
     def enqueue_goto(self, idx):
         if idx < 0 or idx >= self.MAX_POSES:
@@ -77,6 +83,7 @@ class ArmController:
         """
         try:
             self.ser.write((cmd + "\n").encode())
+            print(f"[{self.port}] OUT: {cmd}")
         except Exception as e:
             # record and propagate minimal info -- don't raise in poll/update
             self.last_messages.append(f"WRITE_ERROR: {e}")
@@ -119,6 +126,7 @@ class ArmController:
     def _handle_line(self, line):
         """Parse a received line and update state machine flags."""
         self.last_messages.append(line)
+        print(f"[{self.port}] IN: {line}")
 
         # REJECTED
         if self.RE_REJECTED.search(line):
@@ -136,17 +144,6 @@ class ArmController:
             # ACCEPTED means the controller has queued the motion
             if self._waiting_for_accept and self._waiting_id == rid:
                 self._waiting_for_accept = False
-                # If this was a goto, we now wait for completion; for set_pose, we
-                # are done once accepted.
-                # If we previously sent a goto, expect a COMPLETED reply next.
-                # We keep readyForMotion False until motion is complete.
-                # If a set_pose was sent, we mark ready immediately so other
-                # commands may be queued (depends on hardware semantics).
-                # We'll assume ACCEPTED for set_pose means it's safe to continue.
-                # For goto, we set _waiting_for_complete True.
-                # To decide which, check if current queued command was goto by
-                # comparing ID to currentPose? Simpler: when sending we set both
-                # waiting flags appropriately. Here just clear accept and return.
             return
 
         m = self.RE_COMPLETED.search(line)
@@ -157,6 +154,7 @@ class ArmController:
                 self._waiting_id = None
                 self.currentPose = rid
                 self.readyForMotion = True
+                print(f"pose id={rid} angles={self.poses[rid]}")
             return
 
         m = self.RE_STOPPED.search(line)
@@ -236,7 +234,7 @@ class ArmController:
         self.update()
 
     # convenience: drain and return queued length
-    def queued_count(self):
+    def getQueueSize(self):
         return len(self._queue)
 
         

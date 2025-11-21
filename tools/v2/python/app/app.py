@@ -29,9 +29,11 @@ def load_dh_parameters(filename="dh_raw.txt"):
                 theta = float(parts[3])
                 a = float(parts[4])
                 alpha = float(parts[5])
+                qlim_low = float(parts[6])
+                qlim_high = float(parts[7])
             except ValueError:
                 raise ValueError(f"Non-numeric DH values in line: {line!r}")
-            dh.append((name, active, a, alpha, d, theta))
+            dh.append((name, active, a, alpha, d, theta, qlim_low, qlim_high))
     return dh
 
 def build_robot(dh_params):
@@ -41,11 +43,11 @@ def build_robot(dh_params):
     Each link is created with its name, and if 'active' is False, the link is marked as dummy.
     """
     links = []
-    for i, (name, active, a, alpha, d, theta) in enumerate(dh_params):
+    for i, (name, active, a, alpha, d, theta, qlim_low, qlim_high) in enumerate(dh_params):
         # Use RevoluteDH; offset sets the constant theta term
         link = None
         if active:
-            link = rtb.RevoluteDH(d=d, a=a, alpha=alpha, offset=theta, qlim=[-np.pi/2, np.pi/2])
+            link = rtb.RevoluteDH(d=d, a=a, alpha=alpha, offset=theta, qlim=[qlim_low, qlim_high])
         else:
             link = rtb.RevoluteDH(d=d, a=a, alpha=alpha, offset=theta, qlim=[0, 0])  # dummy link
         links.append(link)
@@ -57,6 +59,9 @@ def generate_circle_points(centre, radius, num_points=31):
     points = []
     for i in range(num_points):
         angle = 2 * np.pi * i / (num_points - 1)
+        # x = centre[0] + radius * np.cos(angle)
+        # y = centre[1] + radius * np.sin(angle)
+        # z = centre[2]
         x = centre[0] + radius * np.cos(angle)
         y = centre[1] + radius * np.sin(angle)
         z = centre[2]
@@ -106,11 +111,15 @@ def main():
     vis = Visualiser()
     vis.createWindow()
     
+    # open dual arm controller
+    dctrl = DualArmController(port_base="/dev/ttyACM0", port_forearm="/dev/ttyUSB0")
+    
     # build kinematics
     dh_params = load_dh_parameters("/home/trio/source/RobotGL/tools/v2/python/dh_raw.txt")
     robot = build_robot(dh_params)
     target_points = generate_circle_points(
-        centre=(-0.15, -0.15, 0.2),
+        #centre=(-0.1608, 0.0, 0.4161),
+        centre=(-0.14, 0.14, 0.37),
         radius=0.05,
         num_points=31
     )
@@ -119,20 +128,37 @@ def main():
         target_points
     )
     
-    # print("Generated Poses:")
-    # for i, pose in enumerate(poses):
-    #     print(f"Pose {i}: {pose}")
-    # print("\nGenerated Points:")
-    # for i, point in enumerate(points):
-    #     print(f"Point {i}: {point}")
+    for i in range(1, len(poses)):
+        dctrl.enqueue_set_pose(i, poses[i])
+    for i in range(1, len(poses)):
+        time.sleep(0.05)
+        dctrl.tick()
+    for i in range(1, len(poses)):
+        dctrl.enqueue_goto(i)
     
     index = 0
     start_time = vis.getTicks()
     elapsed_time = 0
     while True:
+        # queue motions if nothing in pending
+        if dctrl.getQueueSizes() == (0, 0):
+            if input("Enter to continue...") == "reset":
+                dctrl.enqueue_goto(0)
+            else:
+                for i in range(1, len(poses)):
+                    dctrl.enqueue_goto(i)
+                    
+        # read in responses and send commands
+        dctrl.tick()
+
         vis.begin_frame()
         vis.clear()
         vis.drawOrigin(size=0.05)
+        
+        current_time = vis.getTicks()
+        elapsed_time = current_time - start_time
+        # index = elapsed_time // 250
+        index = dctrl.getCurrentPoses()[0]
         
         # draw target and actual points
         if True:
@@ -151,10 +177,18 @@ def main():
         
         # draw test poses
         if True:
-            angle = 30.0 * (np.pi / 180.0)
+            angle = 0.0 * (np.pi / 180.0)
             q = [angle] * robot.n
+            q[0] = 0.0 * (np.pi / 180.0)
+            q[1] = 45.0 * (np.pi / 180.0)
+            q[2] = -45.0 * (np.pi / 180.0)
+            q[3] = 0.0 * (np.pi / 180.0)
+            q[4] = 0.0 * (np.pi / 180.0)
+            fkin = robot.fkine(q)
+            if (index == 0):
+                print(f"q={q} -> T=\n{fkin}")
             for joint_idx, dh in enumerate(dh_params):
-                name, active, a, alpha, d, theta = dh
+                name, active, a, alpha, d, theta, qlim_low, qlim_high = dh
                 if active:
                     q[joint_idx] = 0.0
                     break
@@ -162,15 +196,9 @@ def main():
             vis.drawRobot(robot, q=q, size=0.03)
         
         vis.end_frame()
+        time.sleep(0.1)
         
-        current_time = vis.getTicks()
-        elapsed_time = current_time - start_time
-        index = elapsed_time // 250
         
-    # TODO:
-    # - integrate visualiser
-    # - integrate dual arm controller
-
 
 if __name__ == "__main__":
     main()

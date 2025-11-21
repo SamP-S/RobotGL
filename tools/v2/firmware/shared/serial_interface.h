@@ -242,8 +242,7 @@ public:
     }
 
     void sendError(const char* _reason, const char* _details = nullptr) {
-        m_serial.print("<ERROR id=");
-        m_serial.print(_id);
+        m_serial.print("<ERROR ");
         m_serial.print(" reason='");
         m_serial.print(_reason);
         if (_details) {

@@ -7,8 +7,8 @@ from OpenGL.GLU import *
 from math import *
 import numpy as np
 
-WINDOW_WIDTH = 480
-WINDOW_HEIGHT = 360
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 
 class Visualiser:
     
@@ -41,10 +41,13 @@ class Visualiser:
     def _pushCameraTransform(self):
         glPushMatrix()
         glTranslatef(0, 0, -5)
+        glTranslatef(0, -0.5, 0)
         glRotatef(30, 1, 0, 0)
         speed = 360 / 40000  # degrees per ms
         elapsed_time = pg.time.get_ticks() - self.start_time
         glRotatef(speed * elapsed_time, 0, 1, 0)
+        glRotatef(-45, 0, 1, 0)
+        glRotatef(-90, 1, 0, 0)
         glScalef(5, 5, 5)
         
     def _popCameraTransform(self):
