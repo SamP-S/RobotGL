@@ -110,7 +110,7 @@ def main():
     dh_params = load_dh_parameters("/home/trio/source/RobotGL/tools/v2/python/dh_raw.txt")
     robot = build_robot(dh_params)
     target_points = generate_circle_points(
-        centre=(0.15, 0.15, 0.0),
+        centre=(-0.15, -0.15, 0.2),
         radius=0.05,
         num_points=31
     )
@@ -134,26 +134,38 @@ def main():
         vis.clear()
         vis.drawOrigin(size=0.05)
         
-        vis.drawRobot(robot, q=poses[index % len(poses)], size=0.03)
+        # draw target and actual points
+        if True:
+            # target positions
+            if elapsed_time % 2000 < 1000:
+                for point in target_points:
+                    vis.drawPoint(point, colour=(1,1,0))
+            # real positions
+            else:
+                for point in pose_points:
+                    vis.drawPoint(point, colour=(0,1,1))
+                    
+        # draw robot at current pose
+        if True:
+            vis.drawRobot(robot, q=poses[index % len(poses)], size=0.03)
+        
+        # draw test poses
+        if True:
+            angle = 30.0 * (np.pi / 180.0)
+            q = [angle] * robot.n
+            for joint_idx, dh in enumerate(dh_params):
+                name, active, a, alpha, d, theta = dh
+                if active:
+                    q[joint_idx] = 0.0
+                    break
+    
+            vis.drawRobot(robot, q=q, size=0.03)
+        
+        vis.end_frame()
         
         current_time = vis.getTicks()
         elapsed_time = current_time - start_time
         index = elapsed_time // 250
-        
-        # target positions
-        if elapsed_time % 2000 < 1000:
-            for point in target_points:
-                vis.drawPoint(point, colour=(1,1,0))
-        # real positions
-        else:
-            for point in pose_points:
-                vis.drawPoint(point, colour=(0,1,1))
-
-        # vis.drawRobot(robot, q=[0.0, 0.0, 0.0, 0.0, 0.0], size=0.03)
-        # vis.drawRobot(robot, q=[30.0, 30.0, 30.0, 0.0, 30.0], size=0.03)
-        # vis.drawRobot(robot, q=[90.0, 90.0, 90.0, 0.0, 90.0], size=0.03)
-        
-        vis.end_frame()
         
     # TODO:
     # - integrate visualiser
