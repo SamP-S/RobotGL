@@ -2,4 +2,5 @@ numpy<2
 pygame
 pyopengl
 pyopengl_accelerate
+pyserial
 roboticstoolbox-python
