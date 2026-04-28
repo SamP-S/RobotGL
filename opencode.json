@@ -1,0 +1,53 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    // "theme": "everforest",
+
+    // model & provider
+    // nemotron-3
+    
+    // permissions
+    "permission": {
+        "edit": "allow",
+        "read": "allow",
+        "write": "allow",
+        "bash": {
+            // allow git, ls, cat, echo, but deny rm -rf, and ask for any other commands
+            "git *": "allow",
+            "ls *": "allow",
+            "cat *": "allow",
+            "echo *": "allow",
+            "rm -rf *": "deny",
+            "*": "ask",
+        },
+        "question": "allow",
+        "codesearch": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "todowrite": "allow",
+        "webfetch": "allow"
+    },
+
+    // commands
+    // https://opencode.ai/docs/commands/
+
+    // instructions
+    "instructions": [
+        "AGENTS.md"
+    ],
+
+    // misc
+    "default_agent": "plan",
+    "autoupdate": true,
+    "share": "manual",      // "manual" | "disabled"
+    "snapshot": true,       // true | false"
+    
+
+    // agents
+    // https://opencode.ai/docs/agents/
+
+    // skills
+    // https://opencode.ai/docs/skills/
+
+    // formatters
+    // https://opencode.ai/docs/formatters/
+}
