@@ -5,32 +5,13 @@ Simulate and live link a 6-DOF robot arm. Model using DH-parameters and calculat
 ## Requirements
 Install dependencies:
 ``` bash
-sudo apt install cmake pkg-config gdb   # installs build tools
-```
-
-Run compile script:
-``` bash
-./compile.sh clean
+# installs build tools
 ```
 
 ## Usage
 Run executable:
 ``` bash
 ./build/robot
-```
-
-## Tools
-Install X11 deps and setup for docker:
-``` bash
-sudo apt update
-sudo apt install x11-xserver-utils
-```
-Build and run docker container:
-``` bash
-cd ./tools/python
-docker build -t robotgl_python .
-docker run -it -v /tmp/.X11-unix:/tmp/.X11-unix robotgl_python bash
-python \<script.py\>
 ```
 
 ## Documeents:
