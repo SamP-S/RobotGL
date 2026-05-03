@@ -3,8 +3,9 @@
 .vscode/
 bin/
 build/
-venv*
-*venv
+venv*/
+*venv/
+dev_venv/
 __pycache__/
 *.pyc
 
