@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Optional, Iterable
 
-from arm_controller import ArmController
+from archive.robot.arm_controller import ArmController
 
 
 class DualArmController:

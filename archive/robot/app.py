@@ -4,8 +4,8 @@ import threading
 import roboticstoolbox as rtb
 from spatialmath import SE3
 
-from visualiser import Visualiser
-from dual_arm_controller import DualArmController
+from archive.robot.visualiser import Visualiser
+from archive.robot.dual_arm_controller import DualArmController
 
 def load_dh_parameters(filename="dh_raw.txt"):
     """Load DH parameters from CSV file with header.

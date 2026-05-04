@@ -8,6 +8,8 @@ venv*/
 dev_venv/
 __pycache__/
 *.pyc
+*.egg-info/
+*.egg-info
 
 # Prerequisites
 *.d

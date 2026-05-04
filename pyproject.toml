@@ -1,0 +1,26 @@
+[project]
+name = "robotgl"
+version = "0.1.1"
+description = "Online/Offline Robot Programmer with MDH JSON support"
+readme = "AGENTS.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "robotgl contributors"}
+]
+dependencies = [
+    "roboticstoolbox-python>=1.1.0",
+]
+
+[project.optional-dependencies]
+frontend = [
+    "pygame>=2.5.0",
+    "pygame-gui>=0.6.0",
+    "PyOpenGL>=3.1.0",
+]
+robot-interfaces = [
+    "pyserial>=3.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

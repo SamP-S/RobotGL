@@ -1,0 +1,23 @@
+{
+    "name": "2DOF_Planar",
+    "links": [
+        {
+            "alpha": 0.0,
+            "a": 0.5,
+            "theta": 0.0,
+            "d": 0.0,
+            "joint_type": "revolute",
+            "joint_limits": [-3.14, 3.14],
+            "name": "link1"
+        },
+        {
+            "alpha": 0.0,
+            "a": 0.5,
+            "theta": 0.0,
+            "d": 0.0,
+            "joint_type": "revolute",
+            "joint_limits": [-3.14, 3.14],
+            "name": "link2"
+        }
+    ]
+}
