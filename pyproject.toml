@@ -1,13 +1,10 @@
 [project]
 name = "robotgl"
 version = "0.1.1"
-description = "Online/Offline Robot Programmer with MDH JSON support"
-readme = "AGENTS.md"
+description = "Online/Offline Robot Programmer"
+readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [
-    {name = "robotgl contributors"}
-]
 dependencies = [
     "roboticstoolbox-python>=1.1.0",
 ]
